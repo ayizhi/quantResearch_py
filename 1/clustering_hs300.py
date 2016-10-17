@@ -40,7 +40,7 @@ def deal_with_data(whole_data,):
 	frame = [];
 	for i in range(len(whole_data)):
 		#如何解决日期对齐问题
-		tData = np.array(whole_data[i])[0:100]
+		tData = np.array(whole_data[i])[0:200]
 		name = tData[0][2]
 		date = []
 		open_price = []
@@ -56,11 +56,12 @@ def deal_with_data(whole_data,):
 		var_price = close_price - open_price
 		frame.append(var_price)
 
+
 	#concat
 	final = pd.concat(frame,axis=1)
 	#fix data
 	final = final.fillna(method='ffill')
-	final = final.ix[-50:]
+	final = final.ix[-150:]
 
 	return final
 
