@@ -30,10 +30,12 @@ def get_daily_data_from_db(ticker,ticker_name,ticker_id,date_list,con):
 		daily_data = cur.fetchall()
 		dates = np.array([d[0] for d in daily_data])
 		#此处以受益为基准
-		open_price = np.array([d[2] for d in daily_data],dtype='float64')
+		# open_price = np.array([d[2] for d in daily_data],dtype='float64')
 		close_price = np.array([d[4] for d in daily_data],dtype='float64')
-		var_price = close_price - open_price
-		daily_data = DataFrame(var_price,index=dates,columns=[ticker_name])
+		# var_price = close_price - open_price
+		# daily_data = DataFrame(var_price,index=dates,columns=[ticker_id])
+
+		daily_data = DataFrame(close_price,index=dates,columns=[ticker_id])
 		daily_data = daily_data.reindex(date_list,method='ffill')
 		return daily_data
 
@@ -66,6 +68,8 @@ def deal_data(whole_data):
 			cadf1 = cadf[0]
 			cadf2 = cadf[4]['5%']
 			if cadf1 < cadf2 :
+				print i,r,cadf1,cadf2
+
 				finall_pair.append((i,r))
 
 	return finall_pair
