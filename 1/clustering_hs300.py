@@ -25,44 +25,31 @@ def get_tickers_from_db(con):
 
 
 #read dataset from db
-def get_timeline_from_db(ticker,con):
-	name = ticker[2]
-	ticker_id = ticker[1]
-
+def get_timeline_from_db(ticker,ticker_name,ticker_id,date_list,con):
 	with con:
 		cur = con.cursor()
 		cur.execute('SELECT price_date,open_price,high_price,low_price,close_price,volume from daily_price where symbol_id = %s' % ticker_id)
 		daily_data = cur.fetchall()
-		daily_data = [[d[0],ticker_id,name,d[2],d[4]] for d in daily_data]
-		return name,ticker_id,daily_data
+		dates = np.array([d[0] for d in daily_data])
+		open_price = np.array([d[2] for d in daily_data],dtype='float64')
+		close_price = np.array([d[4] for d in daily_data],dtype='float64')
+		var_price = close_price - open_price
+		daily_data = DataFrame(var_price,index=dates,columns=[ticker_name])
+		daily_data = daily_data.reindex(date_list,method='ffill')
+
+		return daily_data
 
 #deal data
-def deal_with_data(whole_data,):
-	frame = [];
-	for i in range(len(whole_data)):
-		#如何解决日期对齐问题
-		tData = np.array(whole_data[i])[0:200]
-		name = tData[0][2]
-		date = []
-		open_price = []
-		close_price = []
-		for j in range(len(tData)):
-			one_day_data = tData[j]
-			date.append(one_day_data[0])
-			open_price.append(one_day_data[3])
-			close_price.append(one_day_data[4])
-
-		open_price = DataFrame(open_price,columns=[name],index=date ,dtype = 'float64')
-		close_price = DataFrame(close_price,columns=[name],index=date,dtype = 'float64')
-		var_price = close_price - open_price
-		frame.append(var_price)
-
+def deal_with_data(whole_data):
 
 	#concat
-	final = pd.concat(frame,axis=1)
+	final = pd.concat(whole_data,axis=1)
 	#fix data
 	final = final.fillna(method='ffill')
+
+	#由于太慢算得慢，所以改
 	final = final.ix[-150:]
+	print final
 
 	return final
 
@@ -158,14 +145,18 @@ if __name__ == '__main__':
 	whole_data = []
 	#all tickers
 	tickers = get_tickers_from_db(con)
+	#由于太慢算得慢，所以改
+	date_list = pd.date_range('1/1/2014', '12/31/2016', freq='1D')
 
 	for i in range(len(tickers)):
 		ticker = tickers[i]
-		name,ticker_id,daily_data = get_timeline_from_db(ticker,con)
+		ticker_name = ticker[2]
+		ticker_id = ticker[1]
+		daily_data = get_timeline_from_db(ticker,ticker_name,ticker_id,date_list,con)
 		whole_data.append(daily_data)
 
 	final_data = deal_with_data(whole_data)
-	#cluster data
+	# cluster data
 	cluster_data(final_data)
 
 

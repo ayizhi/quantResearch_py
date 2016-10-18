@@ -16,15 +16,13 @@ def get_tickers_from_db(con):
 		return [(d[0],d[1],d[2]) for d in data]
 
 #get data from 2010 to 2015
-def get_2010_2015(ticker_id,ticker_name,date_list,con):
+def get_2010_2015(ticker_id,ticker_name,con):
 		with con:
 			cur = con.cursor()
 			cur.execute('SELECT price_date,close_price from daily_price where (symbol_id = %s) and (price_date BETWEEN "20100101" AND "20151231")' % ticker_id)
 			ticker_data = cur.fetchall()
 			dates = np.array([d[0] for d in ticker_data])
 			t_data = np.array([d[1] for d in ticker_data])
-			# ticker_data = DataFrame(t_data,index=dates,columns=[ticker_name],dtype='float64')
-			# ticker_data = ticker_data.reindex(date_list,fill_value=0)
 			ticker_data = np.array(t_data,dtype='float64')
 	
 		return ticker_data
@@ -50,14 +48,13 @@ if __name__ == '__main__':
 	tickers = get_tickers_from_db(con)
 
 	all_hurst_data = []
-	date_list = pd.date_range('1/1/2010', '12/31/2015', freq='1D')
-
+	
 	#get data of 2010-2015
 	for i in range(len(tickers)):
 		ticker = tickers[i]
 		ticker_id = ticker[1]
 		ticker_name = ticker[2]
-		ticker_data = get_2010_2015(ticker_id,ticker_name,date_list,con)
+		ticker_data = get_2010_2015(ticker_id,ticker_name,con)
 		print '=='
 		print ticker_id,ticker_name,ticker_data.shape
 
