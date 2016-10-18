@@ -1,4 +1,4 @@
-#coding:utf-8
+# coding:utf-8
 import matplotlib.pyplot as plt
 import MySQLdb as mdb
 import datetime
@@ -36,6 +36,7 @@ def get_timeline_from_db(ticker,con):
 		daily_data = [[d[0],ticker_id,name,d[2],d[4]] for d in daily_data]
 		return name,ticker_id,daily_data
 
+#deal data
 def deal_with_data(whole_data,):
 	frame = [];
 	for i in range(len(whole_data)):
@@ -65,6 +66,7 @@ def deal_with_data(whole_data,):
 
 	return final
 
+#clustering
 def cluster_data(data):
 	names = data.columns
 	edge_model = covariance.GraphLassoCV()
