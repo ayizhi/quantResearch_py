@@ -49,7 +49,6 @@ def deal_with_data(whole_data):
 
 	#由于太慢算得慢，所以改
 	final = final.ix[-150:]
-	print final
 
 	return final
 
@@ -105,7 +104,6 @@ def cluster_data(data):
 	# position the labels to avoid overlap with other labels
 	for index, (name, label, (x, y)) in enumerate(zip(names, labels, embedding.T)):
 		name = str(name).decode('utf-8').encode('utf-8')  
-		print name
 		dx = x - embedding[0]
 		dx[index] = 1
 		dy = y - embedding[1]
@@ -146,7 +144,7 @@ if __name__ == '__main__':
 	#all tickers
 	tickers = get_tickers_from_db(con)
 	#由于太慢算得慢，所以改
-	date_list = pd.date_range('1/1/2014', '12/31/2016', freq='1D')
+	date_list = pd.date_range('1/1/2016', '10/1/2016', freq='1D')
 
 	for i in range(len(tickers)):
 		ticker = tickers[i]
