@@ -48,6 +48,7 @@ if __name__ == '__main__':
 	tickers = get_tickers_from_db(con)
 
 	all_hurst_data = []
+	all_adf_data = []
 	
 	#get data of 2010-2015
 	for i in range(len(tickers)):
@@ -55,26 +56,36 @@ if __name__ == '__main__':
 		ticker_id = ticker[1]
 		ticker_name = ticker[2]
 		ticker_data = get_2010_2015(ticker_id,ticker_name,con)
-		print '=='
-		print ticker_id,ticker_name,ticker_data.shape
+
 
 		#数量太少报maxlag should be < nobs
 		if ticker_data.shape[0] < 100:
 			continue
 
+		print '========================================'
+		print '========================================'
+		print '========================================'
 		#hust
 		t_hurst = hurst(ticker_data)
-		print 'Hurst %s : %s' % (ticker_name,t_hurst)
-		if t_hurst < 0.5:
+		if t_hurst < 0.3:
 			all_hurst_data.append((ticker_id,ticker_name))
+			print 'Hurst %s : %s' % (ticker_name,t_hurst)
 
 		#adf test
 		t_adf = ts.adfuller(ticker_data,1)
-		print 'ADF test %s : %s' % (ticker_name,t_adf)
+		if t_adf[0] < t_adf[4]['5%']:
+			all_adf_data.append((ticker_id,ticker_name))
+			print 'ADF test %s : %s' % (ticker_name,t_adf)
+		print '========================================'
+		print '========================================'
+		print '========================================'
+
 
 
 		
-	print all_hurst_data	
+	print all_hurst_data
+	print all_adf_data
+
 
 
 		
