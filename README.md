@@ -11,3 +11,6 @@
 
 ##1/find_mean_reversion
 hurst + ADF test ipython运行之
+
+##1/find_pairs
+找到协同对
