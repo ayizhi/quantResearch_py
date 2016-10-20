@@ -4,13 +4,41 @@ import MySQLdb as mdb
 import datetime
 import numpy as np
 from pandas import Series,DataFrame
+import matplotlib.dates as mdates
 import pandas as pd
 from matplotlib.collections import LineCollection
 from sklearn import cluster, covariance, manifold
 from pandas.stats.api import ols
 import statsmodels.tsa.stattools as ts
-
+import sys   
+reload(sys) # Python2.5 初始化后会删除 sys.setdefaultencoding 这个方法，我们需要重新载入   
+sys.setdefaultencoding('utf-8')   
+  
 #找到有协整关系的pairs
+
+def plot_price_series(df, ts1, ts2):
+    months = mdates.MonthLocator()  # every month
+    fig, ax = plt.subplots()
+    ax.plot(df.index, df[ts1], label=ts1)
+    ax.plot(df.index, df[ts2], label=ts2)
+    ax.xaxis.set_major_locator(months)
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
+    ax.set_xlim(datetime.datetime(2016, 5, 1), datetime.datetime(2016, 10, 1))
+    ax.grid(True)
+    fig.autofmt_xdate()
+
+    plt.xlabel('Month/Year')
+    plt.ylabel('Price ($)')
+    plt.title('%s and %s Daily Prices' % (ts1, ts2))
+    plt.legend()
+    plt.show()
+
+def plot_scatter_series(df, ts1, ts2):
+    plt.xlabel('%s Price ($)' % ts1)
+    plt.ylabel('%s Price ($)' % ts2)
+    plt.title('%s and %s Price Scatterplot' % (ts1, ts2))
+    plt.scatter(df[ts1], df[ts2])
+    plt.show()
 
 
 #get name
@@ -35,29 +63,28 @@ def get_daily_data_from_db(ticker,ticker_name,ticker_id,date_list,con):
 		# var_price = close_price - open_price
 		# daily_data = DataFrame(var_price,index=dates,columns=[ticker_id])
 
-		daily_data = DataFrame(close_price,index=dates,columns=[ticker_id])
+		daily_data = DataFrame(close_price,index=dates,columns=[ticker_name])
 		daily_data = daily_data.reindex(date_list,method='ffill')
 		return daily_data
+
 
 #dealing data with two-pair way to calculating
 def deal_data(whole_data):
 	finall_pair = []
+	print '正在计算... '
+
 	for i in range(len(whole_data)):
 		for r in range(i,len(whole_data)):
+
 			if i == r:
 				continue
+
 
 			d1 = whole_data[i].fillna(method='pad').fillna(0)
 			d1_name = d1.columns[0]
 			d2 = whole_data[r].fillna(method='pad').fillna(0)
 			d2_name = d2.columns[0]
-
-			df = pd.DataFrame(index=d1.index)
-			df[d1_name] = d1[d1_name]
-			df[d2_name] = d2[d2_name]
-
-			# df = pd.concat([d1,d2],axis=1)
-
+			df = pd.concat([d1,d2],axis=1)
 
 			res = ols(y=d1[d1_name], x=d2[d2_name])
 			beta_hr = res.beta.x
@@ -67,10 +94,11 @@ def deal_data(whole_data):
 			#judge比较cadf那俩值的大小
 			cadf1 = cadf[0]
 			cadf2 = cadf[4]['5%']
-			if cadf1 < cadf2 :
-				print i,r,cadf1,cadf2
-
+			#这样更明显
+			if cadf1 - cadf2 < -4 :
+				print '得到结果=======>>>>>>',i,r,cadf1,cadf2,d1_name,d2_name
 				finall_pair.append((i,r))
+				test(i,r)
 
 	return finall_pair
 
@@ -87,6 +115,17 @@ def deal_with_fianl_data(whole,pairs):
 		name2 = names[t[1]]
 		final.append((name1,name2))
 	return final
+
+def test(d1,d2):
+	d1 = whole_data[d1].fillna(method='pad').fillna(0)
+	d1_name = d1.columns[0]
+	d2 = whole_data[d2].fillna(method='pad').fillna(0)
+	d2_name = d2.columns[0]
+	df = pd.concat([d1,d2],axis=1)
+	plot_price_series(df, d1.columns[0], d2.columns[0])
+	plot_scatter_series(df,d1.columns[0], d2.columns[0])
+
+
 
 if __name__ == '__main__':
 	db_host = 'localhost'
@@ -110,6 +149,8 @@ if __name__ == '__main__':
 
 	#整理最终结果，因为finall－pair返回的是序号
 	pairs = deal_with_fianl_data(whole_data,final_pair)
+
+	
 	print pairs
 
 
