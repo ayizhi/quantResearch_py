@@ -19,29 +19,33 @@ def TL(data,ndays):
 	timeLag = pd.Series(pO/(pH - pL),name='TimeLag')
 	return timeLag
 
-def plot(data1,data2):
+def plotTwoData(data1,data2):
 	fig = plt.figure(figsize=(7,5))
 	ax = fig.add_subplot(2, 1, 1)
 	ax.set_xticklabels([])
-	plt.plot(data1,lw=0)
-	plt.title('data1 Price Chart')
+	plt.plot(data1,lw=1)
+	plt.title(str(data1.name) + 'Price Chart')
 	plt.ylabel('Close Price')
 	plt.grid(True)
 	bx = fig.add_subplot(2, 1, 2)
 	plt.plot(data2,'k',lw=0.75,linestyle='-',label='CCI')
 	plt.legend(loc=2,prop={'size':9.5})
-	plt.ylabel('data2 values')
+	plt.ylabel(str(data2.name) + 'values')
 	plt.grid(True)
 	plt.setp(plt.gca().get_xticklabels(), rotation=30)
 	plt.show()
 
+
+
+
 hs300 = pd.DataFrame(ts.get_hist_data('hs300'))
+hs300.index = pd.to_datetime(hs300.index)
 
 timeLag = TL(hs300,20)
 CCI = CCI(hs300,20)
 
-print timeLag,CCI
 
-plt.plot(timeLag,lw=1)
-plt.show()
+print hs300['close']
+
+
 
