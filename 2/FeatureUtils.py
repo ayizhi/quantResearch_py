@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import tushare as ts
 
 
-
+#CCI
 def CCI(data,ndays):
 	TP = (data['high'] + data['low'] + data['close'])/3 
 	CCI = pd.Series((TP - pd.rolling_mean(TP, ndays)) / (0.015 * pd.rolling_std(TP, ndays)),name='CCI')
@@ -13,11 +13,58 @@ def CCI(data,ndays):
 
 #timeLag
 def TL(data,ndays):
-	pH = pd.Series([data['high'][i:i+ndays].max() for i in range(len(data.index))],index=data.index,dtype='float64')
-	pL = pd.Series([data['low'][i:i+ndays].max() for i in range(len(data.index))],index=data.index,dtype='float64')
-	pO = pd.Series([data['open'][i] - data['open'][i-1] for i in range(len(data.index))],index=data.index,dtype='float64')
-	timeLag = pd.Series(pO/(pH - pL),name='TimeLag')
+	index = data.index
+	pH = data['high'].resample(str(ndays) + 'D').max().reindex(index).fillna(method='bfill')
+	pL = data['low'].resample(str(ndays) + 'D').max().reindex(index).fillna(method='bfill')
+	pO = data['open'] - data['open'].shift(1)
+	timeLag = pO/(pH - pL)
+	timeLag.name = 'TL'
 	return timeLag
+
+
+#Ease of Movement
+def EVM(data,ndays):
+	dm = ((data['high'] + data['low'])/2) - ((data['high'].shift(1) + data['low'].shift(1))/2)
+	br = (data['volume']/100000000)/((data['high'] - data['low']))
+	EVM = dm/br
+	EVM_MA = pd.Series(pd.rolling_mean(EVM,ndays),name='EVM')
+	return EVM_MA
+
+# Simple Moving Average 
+def SMA(data, ndays): 
+	SMA = pd.Series(pd.rolling_mean(data['close'], ndays), name = 'SMA') 
+	return SMA
+
+# Exponentially-weighted Moving Average 
+def EWMA(data, ndays): 
+	EMA = pd.Series(pd.ewma(data['close'], span = ndays, min_periods = ndays - 1), 
+	name = 'EWMA_' + str(ndays))  
+	return EMA
+
+
+# Rate of Change (ROC)
+def ROC(data,n):
+	N = data['close'].diff(n)
+	D = data['close'].shift(n)
+	ROC = pd.Series(N/D,name='Rate of Change')
+	return ROC 
+
+# Force Index 
+def ForceIndex(data, ndays): 
+	FI = pd.Series(data['close'].diff(ndays) * data['volume'], name = 'ForceIndex') 
+	return FI
+
+# Compute the Bollinger Bands 
+def BBANDS(data, ndays):
+	MA = pd.Series(pd.rolling_mean(data['close'], ndays)) 
+	SD = pd.Series(pd.rolling_std(data['close'], ndays))
+	b1 = MA + (2 * SD)
+	B1 = pd.Series(b1, name = 'Upper BollingerBand') 
+	b2 = MA - (2 * SD)
+	B2 = pd.Series(b2, name = 'Lower BollingerBand') 
+ 	return B1,B2
+
+
 
 def plotTwoData(data1,data2):
 	fig = plt.figure(figsize=(7,5))
@@ -37,15 +84,10 @@ def plotTwoData(data1,data2):
 
 
 
+def toDatetime(data):
+	data.index = pd.to_datetime(data.index)
+	return data
 
-hs300 = pd.DataFrame(ts.get_hist_data('hs300'))
-hs300.index = pd.to_datetime(hs300.index)
-
-timeLag = TL(hs300,20)
-CCI = CCI(hs300,20)
-
-
-print hs300['close']
 
 
 
