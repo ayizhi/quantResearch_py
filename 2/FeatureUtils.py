@@ -9,7 +9,8 @@ import tushare as ts
 def CCI(data,ndays):
 	TP = (data['high'] + data['low'] + data['close'])/3 
 	CCI = pd.Series((TP - pd.rolling_mean(TP, ndays)) / (0.015 * pd.rolling_std(TP, ndays)),name='CCI')
-	return CCI
+	data.join(CCI)
+	return data
 
 #timeLag
 def TL(data,ndays):
@@ -19,7 +20,8 @@ def TL(data,ndays):
 	pO = data['open'] - data['open'].shift(1)
 	timeLag = pO/(pH - pL)
 	timeLag.name = 'TL'
-	return timeLag
+	data.join(timeLag)
+	return data
 
 
 #Ease of Movement
@@ -28,18 +30,21 @@ def EVM(data,ndays):
 	br = (data['volume']/100000000)/((data['high'] - data['low']))
 	EVM = dm/br
 	EVM_MA = pd.Series(pd.rolling_mean(EVM,ndays),name='EVM')
-	return EVM_MA
+	data.join(EVM_MA)
+	return data
 
 # Simple Moving Average 
 def SMA(data, ndays): 
 	SMA = pd.Series(pd.rolling_mean(data['close'], ndays), name = 'SMA') 
-	return SMA
+	data.join(SMA)
+	return data
 
 # Exponentially-weighted Moving Average 
 def EWMA(data, ndays): 
 	EMA = pd.Series(pd.ewma(data['close'], span = ndays, min_periods = ndays - 1), 
 	name = 'EWMA_' + str(ndays))  
-	return EMA
+	data.join(EMA)
+	return data
 
 
 # Rate of Change (ROC)
@@ -47,12 +52,14 @@ def ROC(data,n):
 	N = data['close'].diff(n)
 	D = data['close'].shift(n)
 	ROC = pd.Series(N/D,name='Rate of Change')
-	return ROC 
+	data.join(ROC)
+	return data 
 
 # Force Index 
 def ForceIndex(data, ndays): 
 	FI = pd.Series(data['close'].diff(ndays) * data['volume'], name = 'ForceIndex') 
-	return FI
+	data.join(FI)
+	return data
 
 # Compute the Bollinger Bands 
 def BBANDS(data, ndays):
@@ -62,7 +69,8 @@ def BBANDS(data, ndays):
 	B1 = pd.Series(b1, name = 'Upper BollingerBand') 
 	b2 = MA - (2 * SD)
 	B2 = pd.Series(b2, name = 'Lower BollingerBand') 
- 	return B1,B2
+ 	data.join([B1,B2])
+ 	return data
 
 
 
