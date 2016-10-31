@@ -3,6 +3,8 @@ import numpy as np
 from pandas import DataFrame,Series
 import matplotlib.pyplot as plt
 import tushare as ts
+from sklearn.datasets import make_classification
+from sklearn.ensemble import ExtraTreesClassifier
 
 
 #CCI
@@ -95,6 +97,39 @@ def plotTwoData(data1,data2):
 def toDatetime(data):
 	data.index = pd.to_datetime(data.index)
 	return data
+
+
+
+def forestFindFeature(X,y,n):
+
+	# Build a forest and compute the feature importances
+	forest = ExtraTreesClassifier(n_estimators=n,random_state=0)
+	forest.fit(X, y)
+	importances = forest.feature_importances_
+	std = np.std([tree.feature_importances_ for tree in forest.estimators_],axis=0)
+	indices = np.argsort(importances)[::-1]
+
+	#Print the feature ranking
+	print("Feature ranking:")
+
+	x_columns = X.columns
+	features = []
+	for f in range(X.shape[1]):
+		features.append(x_columns[int(indices[f])])
+		print f,indices[f],x_columns[int(indices[f])],'===========', importances[indices[f]]
+		# print("%d. feature %d (%f)" % (f + 1,indices[f], importances[indices[f]]))
+
+
+
+	# Plot the feature importances of the forest
+	plt.figure()
+	plt.title("Feature importances")
+	plt.bar(range(X.shape[1]), importances[indices],
+	       color="r", yerr=std[indices], align="center")
+	plt.xticks(range(X.shape[1]), indices)
+	plt.xlim([-1, X.shape[1]])
+	plt.show()
+	return features
 
 
 
