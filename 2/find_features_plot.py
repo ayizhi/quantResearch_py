@@ -7,16 +7,17 @@ import tushare as ts
 import FeatureUtils
 from FeatureUtils import toDatetime
 from sklearn.cross_validation import train_test_split
-from sklearn.grid_search import GridSearchCV
 from sklearn.metrics import classification_report
 from sklearn.svm import SVC
-
+from sklearn.linear_model import Lasso
+from sklearn.metrics import r2_score
+import datetime
 
 
 
 #获取沪深300股指数据
 hs300 = DataFrame(ts.get_hist_data('hs300'))
-hs300 = toDatetime(hs300)
+hs300 = toDatetime(hs300).dropna()
 
 #加入feature
 hs300 = FeatureUtils.CCI(hs300,10)
@@ -39,29 +40,32 @@ y = Series(hs300_norm['close'],dtype='|S6')
 #forest find feature
 features = FeatureUtils.forestFindFeature(X,y,10)
 
-X_F = DataFrame(hs300_norm[features[0:10]])
-y_F = Series(y)
+X_F = DataFrame(hs300_norm[features[0:10]],dtype='float64')
+y_F = Series(y,dtype='float64')
+X_F = FeatureUtils.toDatetime(X_F)
+y_F = FeatureUtils.toDatetime(y_F)
+
+d = datetime.datetime(2015,12,31)
 
 
 
-X_train, X_test, y_train, y_test = train_test_split(X_F, y_F, test_size=0.5, random_state=42)
+X_train = X_F[X.index < d]
+X_test = X_F[X.index >= d]
+y_train = y_F[y.index < d]
+y_test = y_F[y.index >= d]
 
-# Set the parameters by cross-validation
-tuned_parameters = [
-    {'kernel': ['rbf'], 'gamma': [1e-3, 1e-4], 'C': [1, 10, 100, 1000]}
-]
 
-# Perform the grid search on the tuned parameters
-model = GridSearchCV(SVC(C=1), tuned_parameters, cv=10)
+model = Lasso(alpha=0.001)
 model.fit(X_train, y_train)
+pred = model.predict(X_test)
+pred_test = pd.Series(pred, index=y_test.index)
+print(r2_score(y_test,pred_test))
 
-
-print("Optimised parameters found on training set:")
-print(model.best_estimator_, "\n")
-
-print("Grid scores calculated on training set:")
-for params, mean_score, scores in model.grid_scores_:
-    print("%0.3f for %r" % (mean_score, params))
-
-
-
+fig  = plt.figure()
+ax = fig.add_subplot(1,1,1)
+ax.plot(y_test,'r',lw=0.75,linestyle='-',label='realY')
+ax.plot(pred_test,'b',lw=0.75,linestyle='-',label='predY')
+plt.legend(loc=2,prop={'size':9})
+plt.setp(plt.gca().get_xticklabels(), rotation=30)
+plt.grid(True)
+plt.show()
