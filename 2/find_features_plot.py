@@ -11,6 +11,12 @@ from sklearn.metrics import classification_report
 from sklearn.svm import SVC
 from sklearn.linear_model import Lasso
 from sklearn.metrics import r2_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.lda import LDA
+from sklearn.metrics import confusion_matrix
+from sklearn.qda import QDA
+from sklearn.svm import LinearSVC, SVC
 import datetime
 
 
@@ -40,8 +46,8 @@ y = Series(hs300_norm['close'],dtype='|S6')
 #forest find feature
 features = FeatureUtils.forestFindFeature(X,y,10)
 
-X_F = DataFrame(hs300_norm[features[0:10]],dtype='float64')
-y_F = Series(y,dtype='float64')
+X_F = DataFrame(hs300_norm[features[0:10]],dtype='|S6')
+y_F = Series(y,dtype='|S6')
 X_F = FeatureUtils.toDatetime(X_F)
 y_F = FeatureUtils.toDatetime(y_F)
 
@@ -55,17 +61,53 @@ y_train = y_F[y.index < d]
 y_test = y_F[y.index >= d]
 
 
-model = Lasso(alpha=0.001)
-model.fit(X_train, y_train)
-pred = model.predict(X_test)
-pred_test = pd.Series(pred, index=y_test.index)
-print(r2_score(y_test,pred_test))
+# Create the (parametrised) models
+print("Hit Rates/Confusion Matrices:\n")
+models = [("LR", LogisticRegression()), 
+          ("LDA", LDA()), 
+          # ("QDA", QDA()),
+          ('lasso',Lasso(alpha=0.001)),
+          ("LSVC", LinearSVC()),
+          ("RSVM", SVC(
+          	C=1000000.0, cache_size=200, class_weight=None,
+            coef0=0.0, degree=3, gamma=0.0001, kernel='rbf',
+            max_iter=-1, probability=False, random_state=None,
+            shrinking=True, tol=0.001, verbose=False)
+          ),
+          ("RF", RandomForestClassifier(
+          	n_estimators=1000, criterion='gini', 
+            max_depth=None, min_samples_split=2, 
+            min_samples_leaf=1, max_features='auto', 
+            bootstrap=True, oob_score=False, n_jobs=1, 
+            random_state=None, verbose=0)
+          )]
 
-fig  = plt.figure()
-ax = fig.add_subplot(1,1,1)
-ax.plot(y_test,'r',lw=0.75,linestyle='-',label='realY')
-ax.plot(pred_test,'b',lw=0.75,linestyle='-',label='predY')
-plt.legend(loc=2,prop={'size':9})
-plt.setp(plt.gca().get_xticklabels(), rotation=30)
-plt.grid(True)
-plt.show()
+# Iterate through the models
+for m in models:
+    
+    # Train each of the models on the training set
+    m[1].fit(X_train, y_train)
+
+    # Make an array of predictions on the test set
+    pred = m[1].predict(X_test)
+
+    # Output the hit-rate and the confusion matrix for each model
+    print("%s:\n%0.3f" % (m[0], r2_score(y_test,pred_test))
+
+
+
+
+# model = Lasso(alpha=0.001)
+# model.fit(X_train, y_train)
+# pred = model.predict(X_test)
+# pred_test = pd.Series(pred, index=y_test.index)
+# print(r2_score(y_test,pred_test))
+
+# fig  = plt.figure()
+# ax = fig.add_subplot(1,1,1)
+# ax.plot(y_test,'r',lw=0.75,linestyle='-',label='realY')
+# ax.plot(pred_test,'b',lw=0.75,linestyle='-',label='predY')
+# plt.legend(loc=2,prop={'size':9})
+# plt.setp(plt.gca().get_xticklabels(), rotation=30)
+# plt.grid(True)
+# plt.show()
