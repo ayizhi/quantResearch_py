@@ -6,5 +6,5 @@ import os
 path = os.getcwd()
 print path
 
-# data = pd.read_csv('HFT_XY_unselected.csv.xz')
-# print data
+data = pd.read_csv(path + '/2/HFT_XY_unselected.csv',encoding='gbk')
+print data
