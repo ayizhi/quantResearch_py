@@ -7,6 +7,6 @@ import os
 path = os.getcwd()
 print path
 
-data = pd.read_csv(path + '/2/hs.csv',parse_dates=True)
-data = pd.DataFrame(data)
-print data.shape
+data = pd.read_csv(path + '/hs.csv',parse_dates=True,iterator=True)
+data = pd.DataFrame(data.get_chunk(1000))
+print data
