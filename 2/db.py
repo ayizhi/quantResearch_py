@@ -19,7 +19,7 @@ def get_tickers_from_db():
 		return [(d[1],d[2]) for d in data]
 
 #get data by tickerId
-def get_data_by_id(ticker_id):
+def get_10_50_by_id(ticker_id):
 	db_host = 'localhost'
 	db_user = 'root'
 	db_password = ''
