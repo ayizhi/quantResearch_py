@@ -36,32 +36,29 @@ hs300_norm = (hs300 - hs300.mean())/(hs300.max() - hs300.min())
 
 # # Build a classification task using 3 informative features
 X_real = DataFrame(hs300_norm.drop('close',1),dtype='|S6')
-X = X_real.shift(periods = -1).dropna()
+X = X_real.shift(1).dropna()
 y_real = Series(hs300_norm['close'],dtype='|S6')
 y = y_real[:-1]
 
-print X.shape,y.shape,'=========='
-
 
 #forest find feature
-features = FeatureUtils.forestFindFeature(X,y,1000)
+features = FeatureUtils.forestFindFeature(X,y,100)
+
 
 X_real_F = DataFrame(hs300_norm[features[0:10]],dtype='|S6')
-X_F = X_real_F.shift(periods = -1).dropna()
+X_F = X_real_F.shift(1).dropna()
 y_F = Series(y,dtype='|S6')
-X_F = FeatureUtils.toDatetime(X_F)
-y_F = FeatureUtils.toDatetime(y_F)
+
+
 
 d = datetime.datetime(2015,12,31)
 
-print X_F.shape,y_F.shape
 
 X_train = X_F[X.index < d]
 X_test = X_F[X.index >= d]
-y_train = y_F[y.index < d]
-y_test = y_F[y.index >= d]
+y_train = y_F[y.index <= d]
+y_test = y_F[y.index > d]
 
-print X_train.shape,X_test.shape,y_train.shape,y_test.shape
 
 # Create the (parametrised) models
 print("Hit Rates/Confusion Matrices:\n")
@@ -73,16 +70,15 @@ models = [
 ]
 
 for m in models:
-	m[1].fit(X_train,y_train)
+	m[1].fit(np.array(X_train),np.array(y_train))
 	pred = m[1].predict(X_test)
 	print "%s:\n%0.3f" % (m[0], r2_score(y_test,pred))
 
 
-model = Lasso(alpha=0.001)
+model = Lasso(alpha=0.0001)
 model.fit(X_train, y_train)
 pred = model.predict(X_test)
 pred_test = pd.Series(pred, index=y_test.index)
-print(r2_score(y_test,pred_test))
 fig  = plt.figure()
 ax = fig.add_subplot(1,1,1)
 ax.plot(y_test,'r',lw=0.75,linestyle='-',label='realY')
