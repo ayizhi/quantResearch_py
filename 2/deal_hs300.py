@@ -6,5 +6,8 @@
 import db
 from db import get_10_50_by_id,get_tickers_from_db
 
-tickers = get_tickers_from_db
+tickers = get_tickers_from_db()
+
 print tickers
+
+

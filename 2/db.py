@@ -16,7 +16,7 @@ def get_tickers_from_db():
 		cur = con.cursor()
 		cur.execute('SELECT ticker,name FROM symbol')
 		data = cur.fetchall()
-		return [(d[1],d[2]) for d in data]
+		return data
 
 #get data by tickerId
 def get_10_50_by_id(ticker_id):
