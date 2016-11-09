@@ -1,4 +1,4 @@
-import MYSQLdb as mdb
+import MySQLdb as mdb
 
 
 
