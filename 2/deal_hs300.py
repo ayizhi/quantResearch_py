@@ -8,6 +8,11 @@ from db import get_10_50_by_id,get_tickers_from_db
 
 tickers = get_tickers_from_db()
 
+for i in range(len(tickers)):
+	this_ticker = tickers[i]
+	ticker_id = this_ticker[0]
+	ticker_name = this_ticker[1]
+
 print tickers
 
 
