@@ -28,7 +28,7 @@ def get_10_50_by_id(ticker_id):
 
 	with con:
 		cur = con.cursor()
-		cur.execute('SELECT all from daily_price where symbol_id = %s' % ticker_id)
+		cur.execute('SELECT all from daily_price where (symbol_id = %s) AND (price_date BETWEEN "20100101" AND "20151231")' % ticker_id)
 		daily_data = cur.fetchall()
 		return daily_data
 
