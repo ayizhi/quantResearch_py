@@ -5,6 +5,12 @@
 
 import db
 from db import get_10_50_by_id,get_tickers_from_db
+import datetime 
+import time
+import pandas as pd
+from pandas import DataFrame,Series
+import matplotlib.pyplot as plt
+
 
 tickers = get_tickers_from_db()
 
@@ -14,7 +20,31 @@ for i in range(len(tickers)):
 	ticker_name = this_ticker[1]
 	print ticker_id
 	data = get_10_50_by_id(ticker_id);
-	print data
+	g_data = [[data[i][1],data[i][2],data[i][3],data[i][4],data[i][5]] for i in range(len(data))]
+	index_list = [data[i][0] for i in range(len(data))]
+	df = DataFrame(g_data,index=index_list,columns=['open_price','high_price','low_price','close_price','volume'])
+
+
+	new_data_list = pd.date_range('4/1/2015', '7/1/2015', freq='1D')
+	print(new_data_list)
+	df = df.reindex(new_data_list,fill_value='0')
+
+
+	print df
+
+
+
+
+
+	# pd.join(high_price)
+	# pd.join(low_price)
+	# pd.join(close_price)
+	# pd.join(volume)
+	
+
+
+
+	break
 	
 
 

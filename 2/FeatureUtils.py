@@ -122,14 +122,14 @@ def forestFindFeature(X,y,n):
 
 
 
-	## Plot the feature importances of the forest
-	# plt.figure()
-	# plt.title("Feature importances")
-	# plt.bar(range(X.shape[1]), importances[indices],
-	#        color="r", yerr=std[indices], align="center")
-	# plt.xticks(range(X.shape[1]), indices)
-	# plt.xlim([-1, X.shape[1]])
-	# plt.show()
+	# Plot the feature importances of the forest
+	plt.figure()
+	plt.title("Feature importances")
+	plt.bar(range(X.shape[1]), importances[indices],
+	       color="r", yerr=std[indices], align="center")
+	plt.xticks(range(X.shape[1]), indices)
+	plt.xlim([-1, X.shape[1]])
+	plt.show()
 	return features
 
 

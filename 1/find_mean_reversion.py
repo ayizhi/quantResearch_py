@@ -19,7 +19,7 @@ def get_tickers_from_db(con):
 def get_2010_2015(ticker_id,ticker_name,con):
 		with con:
 			cur = con.cursor()
-			cur.execute('SELECT * from daily_price where (symbol_id = %s) and (price_date BETWEEN "20131231" AND "20151231") and (high_price BETWEEN 10 and 50)' % ticker_id)
+			cur.execute('SELECT price_date,close_price from daily_price where (symbol_id = %s) and (price_date BETWEEN "20100101" AND "20151231")' % ticker_id)
 			ticker_data = cur.fetchall()
 			dates = np.array([d[0] for d in ticker_data])
 			t_data = np.array([d[1] for d in ticker_data])
