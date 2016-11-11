@@ -12,9 +12,8 @@ for i in range(len(tickers)):
 	this_ticker = tickers[i]
 	ticker_id = this_ticker[0]
 	ticker_name = this_ticker[1]
-	get_tickers_from_db(ticker_id);
+	data = get_tickers_from_db(ticker_id);
+	print data
 	
-
-print tickers
 
 
