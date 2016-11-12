@@ -22,12 +22,9 @@ for i in range(len(tickers)):
 	data = get_10_50_by_id(ticker_id);
 	g_data = [[data[i][1],data[i][2],data[i][3],data[i][4],data[i][5]] for i in range(len(data))]
 	index_list = [data[i][0] for i in range(len(data))]
-	df = DataFrame(g_data,index=index_list,columns=['open_price','high_price','low_price','close_price','volume'])
-
-
-	new_data_list = pd.date_range('4/1/2015', '7/1/2015', freq='1D')
-	print(new_data_list)
-	df = df.reindex(new_data_list,fill_value='0')
+	one_data = DataFrame(g_data,index=index_list,columns=['open_price','high_price','low_price','close_price','volume'])
+	new_data_list = pd.date_range('1/1/2015', '12/31/2015', freq='1D')
+	one_data = one_data.reindex(new_data_list,fill_value='0')
 
 
 	print df
