@@ -31,7 +31,7 @@ def get_33_and_66_volumn(date_list):
 
 tickers = get_tickers_from_db()
 new_date_list = pd.date_range('1/1/2015', '12/31/2015', freq='1D')
-# daily_volumn = get_33_and_66_volumn(new_date_list)
+daily_volumn = get_33_and_66_volumn(new_date_list)
 selected_data = []
 
 
@@ -47,10 +47,10 @@ for i in range(len(tickers)):
 		date = data[i][0]
 		date = str(date)[0:10]
 		volume = data[i][5]
-		# volume_range = range(daily_volumn[date][0],daily_volumn[date][1])
-		# if volume > daily_volumn[date][0] and volume < daily_volumn[date][1]:
-		g_data.append([data[i][1],data[i][2],data[i][3],data[i][4],data[i][5]])
-		index_list.append(data[i][0])
+		volume_range = range(daily_volumn[date][0],daily_volumn[date][1])
+		if volume > daily_volumn[date][0] and volume < daily_volumn[date][1]:
+			g_data.append([data[i][1],data[i][2],data[i][3],data[i][4],data[i][5]])
+			index_list.append(data[i][0])
 	if len(g_data) < 50:
 		continue
 	t_ticker = DataFrame(g_data,index=index_list,dtype='float64',columns=['open','high','low','close','volume'])
@@ -60,13 +60,15 @@ for i in range(len(tickers)):
 	t_ticker = forecast.get_good_feature(t_ticker)
 
 	# print t_ticker
-	forecast.get_regression_r2(t_ticker)
+	best_r2 = forecast.get_regression_r2(t_ticker)
+
+	print best_r2,ticker_id
 
 
 
 
 
-	break
+	# break
 
 print len(selected_data)
 	
