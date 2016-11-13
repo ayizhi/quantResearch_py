@@ -13,38 +13,50 @@ from pandas import DataFrame,Series
 import matplotlib.pyplot as plt
 
 
+def get_33_and_66_volumn(date_list):
+	date_list = [str(date_list[i])[:10] for i in range(len(date_list))]
+	date_obj = {}
+	for i in range(len(date_list)):
+		day = date_list[i]
+		day_volume = np.mean(np.array(get_day_volumn_33_66(day)))
+		if np.isnan(day_volume) :
+			continue
+		t33 = int(day_volume * 0.33)
+		t66 = int(day_volume * 0.66)
+		date_obj[day] = (t33,t66)
+		print day,day_volume
+	return date_obj
+
+
 tickers = get_tickers_from_db()
 new_date_list = pd.date_range('1/1/2015', '12/31/2015', freq='1D')
-date_list = [str(new_date_list[i])[:10] for i in range(len(new_date_list))]
-date_obj = {}
-for i in range(len(date_list)):
-	day = date_list[i]
-	day_volume = sorted(get_day_volumn_33_66(day))
-	tlen = len(day_volume)
-	if tlen == 0 :
-		date_obj[day] = (0,0)
+daily_volumn = get_33_and_66_volumn(new_date_list)
+
+
+
+
+for i in range(len(tickers)):
+	this_ticker = tickers[i]
+	ticker_id = this_ticker[0]
+	ticker_name = this_ticker[1]
+	data = get_10_50_by_id(ticker_id);
+	g_data = []
+	index_list = []
+	for i in range(len(data)):
+		date = data[i][0]
+		date = str(date)[0:10]
+		volume = data[i][5]
+		volume_range = range(daily_volumn[date][0],daily_volumn[date][1])
+		if volume > daily_volumn[date][0] and volume < daily_volumn[date][1]:
+			g_data.append([data[i][1],data[i][2],data[i][3],data[i][4],data[i][5]])
+			index_list.append(data[i][0])
+	if len(g_data) < 10:
 		continue
-	t33 = int(tlen * 0.33)
-	t66 = int(tlen * 0.66)
-	date_obj[day] = (day_volume[t33],day_volume[t66])
-print date_obj
+	one_data = DataFrame(g_data,index=index_list,columns=['open_price','high_price','low_price','close_price','volume'])
+	one_data = one_data.reindex(new_date_list,method='ffill').fillna(0)
 
 
-# for i in range(len(tickers)):
-# 	this_ticker = tickers[i]
-# 	ticker_id = this_ticker[0]
-# 	ticker_name = this_ticker[1]
-# 	print ticker_id
-# 	data = get_10_50_by_id(ticker_id);
-# 	g_data = [[data[i][1],data[i][2],data[i][3],data[i][4],data[i][5]] for i in range(len(data))]
-# 	index_list = [data[i][0] for i in range(len(data))]
-# 	one_data = DataFrame(g_data,index=index_list,columns=['open_price','high_price','low_price','close_price','volume'])
-# 	one_data = one_data.reindex(new_data_list,fill_value='0')
-# 	print df
-
-
-
-# 	break
+	break
 	
 
 
