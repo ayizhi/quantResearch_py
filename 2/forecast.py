@@ -4,8 +4,13 @@ import pandas as pd
 from pandas import DataFrame,Series
 import datetime
 import matplotlib.pyplot as plt
-
 import FeatureUtils
+from sklearn.cross_validation import train_test_split
+from sklearn.metrics import classification_report
+from sklearn.svm import SVC
+from sklearn.linear_model import Lasso,LinearRegression,Ridge,LassoLars
+from sklearn.metrics import r2_score
+from sklearn import linear_model
 
 
 def get_good_feature(ticker_data):
@@ -24,11 +29,48 @@ def get_good_feature(ticker_data):
 	X = DataFrame(ticker_data.drop('close',1).fillna(0),dtype='float64')[:-1]
 	#y要把后一天的日期跟前一天对其
 	y = Series(ticker_data['close'].shift(-1).dropna(),dtype='|S6')
-
 	#forest find the best 5 features
-	features = FeatureUtils.forestFindFeature(X,y,100)[:5]
-	ticker_data = ticker_data[features]
+	features = FeatureUtils.forestFindFeature(X,y,100)[:10]
+
+	ticker_data = ticker_data[features].join(ticker_data['close'])
 	return ticker_data
+
+def get_regression_r2(ticker_data):
+	data_len = len(ticker_data)
+	split_line = int(data_len * 0.7)
+	X = ticker_data.drop('close',1)[:-1]
+	y = ticker_data['close'].shift(-1).dropna()
+
+	X_train = X.ix[:split_line]
+	X_test = X.ix[split_line:]
+	y_train = y.ix[:split_line]
+	y_test = y.ix[split_line:]
+
+	models = [
+	('LR',LinearRegression()),
+	('RidgeR',Ridge (alpha = 0.005)),
+	('lasso',Lasso(alpha=0.00001)),
+	('LassoLars',LassoLars(alpha=0.00001))]
+
+	for m in models:
+		m[1].fit(np.array(X_train),np.array(y_train))
+		pred = m[1].predict(X_test.shift(1).dropna())
+		print "%s:\n%0.3f" % (m[0], r2_score(y_test,pred))
+
+
+
+	model = Lasso(alpha=0.0001)
+	model.fit(X_train, y_train)
+	pred = model.predict(X_test.shift(1))
+	pred_test = pd.Series(pred, index=y_test.index)
+	fig  = plt.figure()
+	ax = fig.add_subplot(1,1,1)
+	ax.plot(y_test,'r',lw=0.75,linestyle='-',label='realY')
+	ax.plot(pred_test,'b',lw=0.75,linestyle='-',label='predY')
+	plt.legend(loc=2,prop={'size':9})
+	plt.setp(plt.gca().get_xticklabels(), rotation=30)
+	plt.grid(True)
+	plt.show()
 
 
 

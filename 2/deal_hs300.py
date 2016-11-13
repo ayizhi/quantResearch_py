@@ -60,6 +60,7 @@ for i in range(len(tickers)):
 	t_ticker = forecast.get_good_feature(t_ticker)
 
 	# print t_ticker
+	forecast.get_regression_r2(t_ticker)
 
 
 
