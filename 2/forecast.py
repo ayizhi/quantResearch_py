@@ -55,18 +55,20 @@ def get_regression_r2(ticker_data):
 	best_r2 = (0,0)
 	for m in models:
 		m[1].fit(np.array(X_train),np.array(y_train))
-		#因为index方面，pred出的其实是相当于往后挪了一位，跟原来的y_test是对不上的，所以需要往前进一位
-		pred = m[1].predict(X_test).shift(-1).fillna(0)
-		r2 = r2_score(y_test)
+		#因为index方面，pred出的其实是相当于往后挪了一位，跟原来的y_test是对不上的，所以x需要往前进一位
+		#比较绕，所以从日期对应的方面去考虑
+		pred = m[1].predict(X_test.shift(-1).fillna(0))
+		r2 = r2_score(y_test,pred)
 		if r2 > best_r2[1]:
 			best_r2 = (m[0],r2)
-		print "%s:\n%0.3f" % (m[0], r2_score(y_test,pred))
+		print "%s:\n%0.3f" % (m[0], r2_score(np.array(y_test),np.array(pred)))
 	print 'the best is:',best_r2
 
 	model = Lasso(alpha=0.0001)
 	model.fit(X_train, y_train)
-	pred = model.predict(X_test).shift(-1).fillna(0)
+	pred = model.predict(X_test.shift(-1).fillna(0))
 	pred_test = pd.Series(pred, index=y_test.index)
+
 	fig  = plt.figure()
 	ax = fig.add_subplot(1,1,1)
 	ax.plot(y_test,'r',lw=0.75,linestyle='-',label='realY')
