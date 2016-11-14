@@ -102,7 +102,6 @@ def toDatetime(data):
 
 
 def forestFindFeature(X,y,n):
-
 	# Build a forest and compute the feature importances
 	forest = ExtraTreesClassifier(n_estimators=n,random_state=0)
 	forest.fit(X, y)
@@ -117,19 +116,7 @@ def forestFindFeature(X,y,n):
 	features = []
 	for f in range(X.shape[1]):
 		features.append(x_columns[int(indices[f])])
-		print f,indices[f],x_columns[int(indices[f])],'===========', importances[indices[f]]
-		# print("%d. feature %d (%f)" % (f + 1,indices[f], importances[indices[f]]))
-
-
-
-	# Plot the feature importances of the forest
-	# plt.figure()
-	# plt.title("Feature importances")
-	# plt.bar(range(X.shape[1]), importances[indices],
-	#        color="r", yerr=std[indices], align="center")
-	# plt.xticks(range(X.shape[1]), indices)
-	# plt.xlim([-1, X.shape[1]])
-	# plt.show()
+		# print f,indices[f],x_columns[int(indices[f])],'===========', importances[indices[f]]
 	return features
 
 

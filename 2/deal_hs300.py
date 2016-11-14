@@ -33,10 +33,12 @@ tickers = get_tickers_from_db()
 new_date_list = pd.date_range('1/1/2015', '12/31/2015', freq='1D')
 daily_volumn = get_33_and_66_volumn(new_date_list)
 selected_data = []
+best_performer = []
 
 
 
 for i in range(len(tickers)):
+	print i,'=========='
 	this_ticker = tickers[i]
 	ticker_id = this_ticker[0]
 	ticker_name = this_ticker[1]
@@ -58,19 +60,23 @@ for i in range(len(tickers)):
 	selected_data.append(t_ticker)
 	#得到表现最好的5个feature下的数据
 	t_ticker = forecast.get_good_feature(t_ticker)
+	best_regression_r2 = forecast.get_regression_r2(t_ticker)
+	best_cluster_r2 = forecast.get_cluster_r2(t_ticker)
 
-	# print t_ticker
-	best_r2 = forecast.get_regression_r2(t_ticker)
+	#取最好的前20个
+	if best_regression_r2 > 0.85:
+		this_ticker_node = (best_regression_r2,best_cluster_r2,ticker_id)
+		if len(best_performer) < 20 :
+			best_performer.append(this_ticker_node)
+			best_performer = sorted(best_performer)
+		else:
+			theLast_reg_r2 = best_performer[0][0]
+			if best_regression_r2 > theLast_reg_r2 :
+				best_performer = best_performer[1:]
+				best_performer.append(this_ticker_node)
 
-	print best_r2,ticker_id
-
-
-
-
-
-	# break
-
-print len(selected_data)
+print best_performer
+print '可利用的数据:',len(selected_data)
 	
 
 
