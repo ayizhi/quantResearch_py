@@ -38,7 +38,6 @@ best_performer = []
 
 
 for i in range(len(tickers)):
-	print i,'=========='
 	this_ticker = tickers[i]
 	ticker_id = this_ticker[0]
 	ticker_name = this_ticker[1]
@@ -61,11 +60,11 @@ for i in range(len(tickers)):
 	#得到表现最好的5个feature下的数据
 	t_ticker = forecast.get_good_feature(t_ticker)
 	best_regression_r2 = forecast.get_regression_r2(t_ticker)
-	best_cluster_r2 = forecast.get_cluster_r2(t_ticker)
+	best_classification_r2 = forecast.get_classification_r2(t_ticker)
 
 	#取最好的前20个
 	if best_regression_r2 > 0.85:
-		this_ticker_node = (best_regression_r2,best_cluster_r2,ticker_id)
+		this_ticker_node = (best_regression_r2,best_classification_r2,ticker_id)
 		if len(best_performer) < 20 :
 			best_performer.append(this_ticker_node)
 			best_performer = sorted(best_performer)

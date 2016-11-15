@@ -71,25 +71,26 @@ def get_regression_r2(ticker_data):
 		if r2 > best_r2[1]:
 			best_r2 = (m[0],r2)
 		# print "%s:\n%0.3f" % (m[0], r2_score(np.array(y_test),np.array(pred)))
-	print 'the best regression is:',m[0],best_r2
 
-	# model = Lasso(alpha=0.0001)
-	# model.fit(X_train, y_train)
-	# pred = model.predict(X_test.shift(-1).fillna(0))
-	# pred_test = pd.Series(pred, index=y_test.index)
+	print 'the best regression is:',best_r2
 
-	# fig  = plt.figure()
-	# ax = fig.add_subplot(1,1,1)
-	# ax.plot(y_test,'r',lw=0.75,linestyle='-',label='realY')
-	# ax.plot(pred_test,'b',lw=0.75,linestyle='-',label='predY')
-	# plt.legend(loc=2,prop={'size':9})
-	# plt.setp(plt.gca().get_xticklabels(), rotation=30)
-	# plt.grid(True)
-	# plt.show()
+	model = best_r2[0]
+	model.fit(X_train, y_train)
+	pred = model.predict(X_test.shift(-1).fillna(0))
+	pred_test = pd.Series(pred, index=y_test.index)
+
+	fig  = plt.figure()
+	ax = fig.add_subplot(1,1,1)
+	ax.plot(y_test,'r',lw=0.75,linestyle='-',label='realY')
+	ax.plot(pred_test,'b',lw=0.75,linestyle='-',label='predY')
+	plt.legend(loc=2,prop={'size':9})
+	plt.setp(plt.gca().get_xticklabels(), rotation=30)
+	plt.grid(True)
+	plt.show()
 
 	return best_r2
 
-def get_cluster_r2(ticker_data):
+def get_classification_r2(ticker_data):
 
 
 	data_len = len(ticker_data)
