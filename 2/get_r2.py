@@ -42,7 +42,7 @@ def get_regression_r2(ticker_data):
 	# ('RidgeR',Ridge (alpha = 0.005)),
 	# ('lasso',Lasso(alpha=0.00001)),
 	# ('LassoLars',LassoLars(alpha=0.00001)),
-	('RandomForestRegression',RandomForestRegressor(10000))]
+	('RandomForestRegression',RandomForestRegressor(1000))]
 
 	best_r2 = ('',-10000000)
 
