@@ -34,6 +34,7 @@ class MovingAverageCrossStrategy(Strategy):
 
         # Set to True if a symbol is in the market
         self.bought = self._calculate_initial_bought()
+        
 
     def _calculate_initial_bought(self):
         """
