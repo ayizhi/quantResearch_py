@@ -81,8 +81,8 @@ class MovingAverageCrossStrategy(Strategy):
 
 
 if __name__ == "__main__":
-    csv_dir = REPLACE_WITH_YOUR_CSV_DIR_HERE
-    symbol_list = ['AAPL']
+    csv_dir = 'data'
+    symbol_list = ['600050']
     initial_capital = 100000.0
     start_date = datetime.datetime(1990,1,1,0,0,0)
     heartbeat = 0.0

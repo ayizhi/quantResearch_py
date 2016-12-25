@@ -143,6 +143,8 @@ class HistoricCSVDataHandler(DataHandler):
             self.symbol_data[s] = self.symbol_data[s].\
                 reindex(index=comb_index, method='pad').iterrows()
 
+        print(self.symbol_data,'======')
+
     def _get_new_bar(self, symbol):
         """
         Returns the latest bar from the data feed.
