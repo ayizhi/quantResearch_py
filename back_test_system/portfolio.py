@@ -122,7 +122,7 @@ class Portfolio(object):
         for s in self.symbol_list:
             # Approximation to the real value
             market_value = self.current_positions[s] * \
-                self.bars.get_latest_bar_value(s, "adj_close")
+                self.bars.get_latest_bar_value(s, "close")
             dh[s] = market_value
             dh['total'] += market_value
 
@@ -246,6 +246,9 @@ class Portfolio(object):
         total_return = self.equity_curve['equity_curve'][-1]
         returns = self.equity_curve['returns']
         pnl = self.equity_curve['equity_curve']
+
+        print (total_return,returns,pnl)
+
 
         sharpe_ratio = create_sharpe_ratio(returns, periods=252*60*6.5)
         drawdown, max_dd, dd_duration = create_drawdowns(pnl)

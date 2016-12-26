@@ -1,6 +1,9 @@
 import MySQLdb as mdb
 import csv
-
+import pandas as pd
+import numpy as np
+from pandas import DataFrame,Series
+import sys
 
 def get_tickers_from_db():
 	db_host = 'localhost'
@@ -28,11 +31,16 @@ def get_one_ticker_by_id(ticker_id):
 
 def render_csv(ticker_id):
 	data = get_one_ticker_by_id(ticker_id)
-	csvFile = file('./data/%s.csv' % ticker_id,'wb')
-	writer = csv.writer(csvFile)
-	writer.writerow(['datetime', 'open', 'high', 'low', 'close', 'volume', 'adj_close'])
-	writer.writerows(data)
-	csvFile.close()	
+
+	np_data = np.array(data)
+	pd_data = DataFrame(np_data,columns = ['datetime', 'open', 'high', 'low', 'close', 'volume'])
+	adj_close = Series([d[4] for d in data])
+	pd_data['adj_close'] = adj_close
+	pd_data.to_csv('./data/%s.csv' % ticker_id)	
+
+render_csv('600050')
+
+
 
 
 
