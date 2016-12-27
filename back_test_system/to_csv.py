@@ -38,6 +38,7 @@ def render_csv(ticker_id):
 	pd_data['adj_close'] = adj_close
 	pd_data.to_csv('./data/%s.csv' % ticker_id)	
 
+
 render_csv('600050')
 
 
