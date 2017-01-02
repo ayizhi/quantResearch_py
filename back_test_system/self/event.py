@@ -1,6 +1,6 @@
-from __future__ imort print_function
+from __future__ import print_function
 
-class Evnet(object):
+class Event(object):
 	pass
 
 class MarketEvent(Event):
@@ -38,7 +38,7 @@ class FillEvent(Event):
 		self.fill_cost = fill_cost
 
 		if commission is None:
-			self.commission = self.calculate_ib.commission()
+			self.commission = self.calculate_ib_commission()
 		else:
 			self.commission = commission
 
