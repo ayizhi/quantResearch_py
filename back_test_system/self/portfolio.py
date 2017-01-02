@@ -100,7 +100,7 @@ class Portfolio(object):
 		self.current_holdings['total'] -= (cost + fill.commission)
 
 	def update_fill(self,event):
-		if event.type = 'FILL':
+		if event.type == 'FILL':
 			self.update_positions_from_fill(event)
 			self.update_holdings_from_fill(event)
 
@@ -135,4 +135,28 @@ class Portfolio(object):
     # ========================
     # POST-BACKTEST STATISTICS
     # ========================
+
+	def create_equity_curve_dataframe(self):
+		curve = pd.DataFrame(self.all_holdings)
+		curve.set_index('datetime',inplace=True)
+		curve['returns'] = curve['total'].pct_change()
+		curve['equity_curve'] = (1.0 * curve['returns']).cumprod()
+		self.equity_curve = curve
+
+	def output_summary_stats(self):
+		total_return = self.equity_curve['equity_curve'][-1]
+		returns = self.equity_curve['returns']
+		pnl = self.equity_curve['equity_curve']
+
+		print (total_return,returns,pnl)
+
+		sharpe_ratio = create_sharpe_ratio(returns,periods=252 * 60 * 6.5)
+		drawdown,max_dd,dd_duration = create_drawdowns(pnl)
+		self.equity_curve['drawdown'] = drawdown
+
+		stats = [('Total Return','%0.2f%%' % ((total_return - 1.0) * 100.0)),('Sharpe Ratio','%0.2f' % sharpe_ratio),('Max Drawdown','%0.2f%%' % (max_dd * 100.0)),('Drawdown Duration','%d' % dd_duration)]
+
+		self.equity_curve.to_csv('equity.csv')
+
+		return stats
 
