@@ -49,5 +49,22 @@ class MovingAverageCrossStrategy(Strategy):
 						self.events.put(signal)
 						self.bought[symbol] = 'OUT'
 
+if __name == '__main__':
+	csv_dir = 'data'
+	symbol_list = ['600050']
+	initial_capital = 100000.0
+	start_date = datetime.datetime(1990,1,1,0,0,0)
+	hearbeat = 0.0
 
+	backtest = Backtest(
+		csv_dir,symbol_list,
+		initial_capital,
+		hearbeat,
+		start_date,
+		HistoricCSVDataHandler,
+		SimulateExecutionHandler,
+		Portfolio,
+		MovingAverageCrossStrategy
+		)
+	 backtest.simulate_trading()
 
