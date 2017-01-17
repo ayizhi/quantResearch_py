@@ -1,4 +1,4 @@
-# QuantAndML_py
+# quantResearch_py
 
 ##1/get_300_names
 先获取沪深300的300个股票名字，放入数据库
