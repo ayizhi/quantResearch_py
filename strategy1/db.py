@@ -16,6 +16,12 @@ def get_hs300_tickers():
 		data = cur.fetchall();
 		return [(d[0],d[1]) for d in data]
 
+def get_ticker_info_by_id(id):
+	start_date = datetime.datetime(2016,01,01)
+	end_date = datetime.today().timetuple()
+	return end_date
 
 
-get_hs300_tickers();
+
+
+print get_ticker_info_by_id(1)
