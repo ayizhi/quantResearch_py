@@ -2,6 +2,7 @@
 import tushare as ts
 import MySQLdb as mdb
 import datetime
+import time
 
 
 def get_hs300_tickers():
@@ -17,10 +18,16 @@ def get_hs300_tickers():
 		return [(d[0],d[1]) for d in data]
 
 def get_ticker_info_by_id(ticker_id):
-	start_date = datetime.datetime(2016,01,01)
-	end_date = datetime.today().timetuple()
-	tData = ts.get_hist_data(ticker_id,start=start_date,end=end_date,retry_count=5,pause=1)
-	return end_date
+	df = ts.get_stock_basics()
+	start_date = df.ix[ticker_id]['timeToMarket'] #上市日期YYYYMMDD
+	start_date = str(start_date)
+	start_date_year = start_date[0:4]
+	start_date_month = start_date[4:6]
+	start_date_day = start_date[6:8]
+	start_date = start_date_year + '-' + start_date_month + '-' + start_date_day
+	end_date = str(datetime.date.today())
+	ticker_data = ts.get_h_data(ticker_id,start=start_date,end=end_date,retry_count=5,pause=1)
+	return ticker_data
 
 
 def save_ticker_into_db(ticker_id,ticker,vendor_id):
@@ -50,7 +57,5 @@ def save_ticker_into_db(ticker_id,ticker,vendor_id):
 	with con:
 		cur = con.cursor()
 		cur.executemany(final_str, daily_data)
-		
 
 
-print get_ticker_info_by_id(1)

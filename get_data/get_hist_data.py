@@ -17,9 +17,9 @@ def get_tickers_from_db(con):
 
 def get_hist_data_from_tushare(ticker):
 	start_date = '2000-1-1'
-	end_date = str(datetime.date.today().timetuple())
-	
-	#get every detail data
+	end_date = str(datetime.today().timetuple())
+
+	get every detail data
 	tData = ts.get_hist_data(ticker,start=start_date,end=end_date,retry_count=5,pause=1)
 	return tData
 
