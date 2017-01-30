@@ -11,16 +11,18 @@ if __name__ == '__main__':
 		ticker = ticker_info[i]
 		ticker_id = ticker[1]
 		ticker_name = ticker[2]
-		vendor_id = i;
+		vendor_id = i
 
-		print '============== %s ====== 正在获取%s == %s ================'%(i,ticker_name,ticker_id)
+		if i < 190:
+			continue
 
 		#更新last_update_date
 		fresh_last_updated_date(ticker_id)
 
+		print ('============== %s , %s , %s ================' % (i,ticker_name,ticker_id))
+
 		#获取
-		ticker_data = get_ticker_info_by_id(ticker_id)
+		ticker_data = get_ticker_info_by_id(ticker_id,'')
 
 		#存储
 		save_ticker_into_db(ticker_id,ticker_data,vendor_id)
-		break

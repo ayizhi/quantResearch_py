@@ -18,16 +18,22 @@ def get_hs300_tickers():
 		return [(d[0],d[1],d[2]) for d in data]
 
 #根据id获取ticker
-def get_ticker_info_by_id(ticker_id):
+def get_ticker_info_by_id(ticker_id,start_date):
 	df = ts.get_stock_basics()
-	start_date = df.ix[ticker_id]['timeToMarket'] #上市日期YYYYMMDD
-	start_date = str(start_date)
-	start_date_year = start_date[0:4]
-	start_date_month = start_date[4:6]
-	start_date_day = start_date[6:8]
-	start_date = start_date_year + '-' + start_date_month + '-' + start_date_day
+
+	print (ticker_id,start_date)
+
+	#如果没传，则默认为该支股票开始的位置
+	if start_date == '':
+		start_date = df.ix[ticker_id]['timeToMarket'] #上市日期YYYYMMDD
+		start_date = str(start_date)
+		start_date_year = start_date[0:4]
+		start_date_month = start_date[4:6]
+		start_date_day = start_date[6:8]
+		start_date = start_date_year + '-' + start_date_month + '-' + start_date_day
+
 	end_date = str(datetime.date.today())
-	ticker_data = ts.get_h_data(ticker_id,start=start_date,end=end_date,retry_count=10,pause=1)
+	ticker_data = ts.get_h_data(ticker_id,start=start_date,end=end_date,retry_count=50,pause=1)
 	return ticker_data
 
 #读取symbol表里的last_update_date
@@ -73,11 +79,8 @@ def save_ticker_into_db(ticker_id,ticker,vendor_id):
 	final_str = "INSERT INTO daily_price (%s) VALUES (%s)" % (column_str, insert_str)
 	daily_data = []
 
-	print ticker.index
-
 
 	for i in range(len(ticker.index)):
-		print i,'====='
 		t_date = ticker.index[i]
 		t_data = ticker.ix[t_date]
 		daily_data.append(
@@ -85,7 +88,6 @@ def save_ticker_into_db(ticker_id,ticker,vendor_id):
 				, t_data['low'], t_data['close'], t_data['volume'], t_data['amount'],0)
 		)
 
-		break;
 
 	with con:
 		cur = con.cursor()
