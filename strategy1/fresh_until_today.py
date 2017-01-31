@@ -16,6 +16,7 @@ if __name__ == '__main__':
 		ticker_data = get_ticker_info_by_id(ticker_id,old_date)
 
 		print ticker_data
+		
 
 		#更新last_update_date
 		# fresh_last_updated_date(ticker_id)
