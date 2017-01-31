@@ -1,6 +1,6 @@
 #coding: utf-8
 
-from db import get_hs300_tickers,get_ticker_info_by_id,save_ticker_into_db,fresh_last_updated_date,get_last_updated_date
+from db import get_hs300_tickers,get_ticker_info_by_id,save_ticker_into_db,get_last_date
 import datetime
 
 
@@ -16,13 +16,8 @@ if __name__ == '__main__':
 		if i < 190:
 			continue
 
-		print ('============== %s , %s , %s ================' % (i,ticker_name,ticker_id))
-
 		#获取
 		ticker_data = get_ticker_info_by_id(ticker_id,'')
-
-		#更新last_update_date
-		fresh_last_updated_date(ticker_id)
 
 		#存储
 		save_ticker_into_db(ticker_id,ticker_data,vendor_id)

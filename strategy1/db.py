@@ -21,8 +21,6 @@ def get_hs300_tickers():
 def get_ticker_info_by_id(ticker_id,start_date):
 	df = ts.get_stock_basics()
 
-	print (ticker_id,start_date)
-
 	#如果没传，则默认为该支股票开始的位置
 	if start_date == '':
 		start_date = df.ix[ticker_id]['timeToMarket'] #上市日期YYYYMMDD
@@ -31,13 +29,14 @@ def get_ticker_info_by_id(ticker_id,start_date):
 		start_date_month = start_date[4:6]
 		start_date_day = start_date[6:8]
 		start_date = start_date_year + '-' + start_date_month + '-' + start_date_day
-
 	end_date = str(datetime.date.today())
+	print ('======= loading：%s to %s , %s ========' % (start_date,end_date,ticker_id))
 	ticker_data = ts.get_h_data(ticker_id,start=start_date,end=end_date,retry_count=50,pause=1)
+	print ('======= loading success =======')
 	return ticker_data
 
-#读取symbol表里的last_update_date
-def get_last_updated_date(ticker_id):
+#读取symbol表里的最新的日期
+def get_last_date(ticker_id):
 	db_host = 'localhost'
 	db_user = 'root'
 	db_password = ''
@@ -45,21 +44,9 @@ def get_last_updated_date(ticker_id):
 	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
 	with con:
 		cur = con.cursor();
-		cur.execute("SELECT last_updated_date from symbol where ticker=%s" % ticker_id )
+		cur.execute("SELECT price_date FROM daily_price WHERE symbol_id=%s ORDER BY price_date DESC" % ticker_id)
 		date = cur.fetchall()
 		return date
-
-#更新symbol表里的last_update_date
-def fresh_last_updated_date(ticker_id):
-	db_host = 'localhost'
-	db_user = 'root'
-	db_password = ''
-	db_name = 'securities_master'
-	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
-	now = datetime.datetime.utcnow()
-	with con:
-		cur = con.cursor();
-		cur.execute("""UPDATE symbol SET last_updated_date='%s' where ticker=%s"""%(now,ticker_id))
 
 
 #储存到数据库
