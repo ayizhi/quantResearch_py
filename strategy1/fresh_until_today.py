@@ -10,14 +10,17 @@ if __name__ == '__main__':
 		ticker_id = ticker[1]
 		ticker_name = ticker[2]
 		vendor_id = i;
-		old_date = str(get_last_updated_date(ticker_id)[0][0])[0:10]
-
-		#更新last_update_date
-		fresh_last_updated_date(ticker_id)
+		old_date = str(get_last_updated_date(ticker_id)[0][0] + datetime.timedelta(days = 1))[0:10]
 
 		#获取
 		ticker_data = get_ticker_info_by_id(ticker_id,old_date)
 
+		print ticker_data
+
+		#更新last_update_date
+		# fresh_last_updated_date(ticker_id)
+
+
 		#存储
-		save_ticker_into_db(ticker_id,ticker_data,vendor_id)
+		# save_ticker_into_db(ticker_id,ticker_data,vendor_id)
 		break
