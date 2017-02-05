@@ -43,7 +43,7 @@ def get_last_date(ticker_id):
 	db_name = 'securities_master'
 	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
 	with con:
-		cur = con.cursor();
+		cur = con.cursor()
 		cur.execute("SELECT price_date FROM daily_price WHERE symbol_id=%s ORDER BY price_date DESC" % ticker_id)
 		date = cur.fetchall()
 		return date
@@ -79,5 +79,22 @@ def save_ticker_into_db(ticker_id,ticker,vendor_id):
 	with con:
 		cur = con.cursor()
 		cur.executemany(final_str, daily_data)
+
+
+#从数据中获取数据
+def get_ticker_from_db_by_id(ticker_id):
+	db_host = 'localhost'
+	db_user = 'root'
+	db_password = ''
+	db_name = 'securities_master'
+	con = mdb.connect(host=db_host,user=db_user,passwd=db_password,db=db_name)
+	with con:
+		cur = con.cursor()
+		cur.execute('SELECT price_date,open_price,high_price,low_price,close_price,volume from daily_price where symbol_id = %s' % ticker_id)
+		daily_data = cur.fetchall()
+		dates = np.array([d[0] for d in daily_data])
+		return dates
+
+get_ticker_from_db_by_id(60050)
 
 
