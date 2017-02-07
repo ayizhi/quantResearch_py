@@ -3,15 +3,14 @@ import tushare as ts
 import MySQLdb as mdb
 import datetime
 import time
-import sqlite3
-
-con = sqlite3.connect('../ticker_data/securities_master.db')
+import numpy as np
+import pandas as pd
 
 def save_hs300_into_db():
 	db_host = 'localhost'
 	db_user = 'root'
 	db_password = ''
-	db_name = 'securities_master'
+	db_name = 'ticker_master'
 	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
 	now = datetime.datetime.utcnow()
 	hs300 = ts.get_hs300s()
@@ -44,7 +43,7 @@ def get_hs300_tickers():
 	db_host = 'localhost'
 	db_user = 'root'
 	db_password = ''
-	db_name = 'securities_master'
+	db_name = 'ticker_master'
 	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
 	with con:
 		cur = con.cursor();
@@ -55,7 +54,6 @@ def get_hs300_tickers():
 #根据id获取ticker
 def get_ticker_info_by_id(ticker_id,start_date):
 	df = ts.get_stock_basics()
-
 	#如果没传，则默认为该支股票开始的位置
 	if start_date == '':
 		start_date = df.ix[ticker_id]['timeToMarket'] #上市日期YYYYMMDD
@@ -75,7 +73,7 @@ def get_last_date(ticker_id):
 	db_host = 'localhost'
 	db_user = 'root'
 	db_password = ''
-	db_name = 'securities_master'
+	db_name = 'ticker_master'
 	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
 	with con:
 		cur = con.cursor()
@@ -89,15 +87,15 @@ def save_ticker_into_db(ticker_id,ticker,vendor_id):
 	db_host = 'localhost'
 	db_user = 'root'
 	db_password = ''
-	db_name = 'securities_master'
+	db_name = 'ticker_master'
 	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
 	# Create the time now
 	now = datetime.datetime.utcnow()
 	 # Create the insert strings
 	column_str = """data_vendor_id, symbol_id, price_date, created_date,
 	              last_updated_date, open_price, high_price, low_price,
-	              close_price, volume, amount, adj_close_price"""
-	insert_str = ("%s, " * 12)[:-2]
+	              close_price, volume, amount"""
+	insert_str = ("%s, " * 11)[:-2]
 	final_str = "INSERT INTO daily_price (%s) VALUES (%s)" % (column_str, insert_str)
 	daily_data = []
 
@@ -107,7 +105,7 @@ def save_ticker_into_db(ticker_id,ticker,vendor_id):
 		t_data = ticker.ix[t_date]
 		daily_data.append(
 			(vendor_id, ticker_id, t_date, now, now,t_data['open'], t_data['high']
-				, t_data['low'], t_data['close'], t_data['volume'], t_data['amount'],0)
+				, t_data['low'], t_data['close'], t_data['volume'], t_data['amount'])
 		)
 
 
@@ -121,15 +119,13 @@ def get_ticker_from_db_by_id(ticker_id):
 	db_host = 'localhost'
 	db_user = 'root'
 	db_password = ''
-	db_name = 'securities_master'
+	db_name = 'ticker_master'
 	con = mdb.connect(host=db_host,user=db_user,passwd=db_password,db=db_name)
 	with con:
 		cur = con.cursor()
-		cur.execute('SELECT price_date,open_price,high_price,low_price,close_price,volume from daily_price where symbol_id = %s' % ticker_id)
+		cur.execute('SELECT price_date,open_price,high_price,low_price,close_price,volume,amount from daily_price where symbol_id = %s' % ticker_id)
 		daily_data = cur.fetchall()
 		dates = np.array([d[0] for d in daily_data])
 		return dates
-
-get_ticker_from_db_by_id(60050)
 
 
