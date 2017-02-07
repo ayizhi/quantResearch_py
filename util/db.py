@@ -52,17 +52,17 @@ def get_hs300_tickers():
 		return [(d[0],d[1],d[2]) for d in data]
 
 #根据id获取ticker
-def get_ticker_info_by_id(ticker_id,start_date):
+def get_ticker_info_by_id(ticker_id,start_date,end_date=str(datetime.date.today())):
 	df = ts.get_stock_basics()
 	#如果没传，则默认为该支股票开始的位置
 	if start_date == '':
+		df = ts.get_stock_basics()
 		start_date = df.ix[ticker_id]['timeToMarket'] #上市日期YYYYMMDD
 		start_date = str(start_date)
 		start_date_year = start_date[0:4]
 		start_date_month = start_date[4:6]
 		start_date_day = start_date[6:8]
 		start_date = start_date_year + '-' + start_date_month + '-' + start_date_day
-	end_date = str(datetime.date.today())
 	print ('======= loading：%s to %s , %s ========' % (start_date,end_date,ticker_id))
 	ticker_data = ts.get_h_data(ticker_id,start=start_date,end=end_date,retry_count=50,pause=1)
 	print ('======= loading success =======')
