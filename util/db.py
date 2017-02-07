@@ -123,9 +123,10 @@ def get_ticker_from_db_by_id(ticker_id):
 	con = mdb.connect(host=db_host,user=db_user,passwd=db_password,db=db_name)
 	with con:
 		cur = con.cursor()
-		cur.execute('SELECT price_date,open_price,high_price,low_price,close_price,volume,amount from daily_price where symbol_id = %s' % ticker_id)
+		cur.execute('SELECT price_date,open_price,high_price,low_price,close_price,volume from daily_price where symbol_id = %s' % ticker_id)
 		daily_data = cur.fetchall()
-		dates = np.array([d[0] for d in daily_data])
-		return dates
+		daily_data_np = np.array(daily_data)
+		daily_data_df = pd.DataFrame(daily_data_np,columns=['index','open','high','low','close','volume'])
 
+		return daily_data_df
 
