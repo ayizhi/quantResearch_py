@@ -23,14 +23,14 @@ from sklearn.svm import LinearSVC, SVC
 
 def get_regression_r2(ticker_data):
 	data_len = len(ticker_data)
-	split_line = int(data_len * 0.8)
-	X = ticker_data.drop('close',1)[:-1]
-	y = ticker_data['close'].shift(-1).dropna()
+	split_line = int(data_len * 0.2)
+	X = ticker_data.drop('close',1).shift(-10).dropna()
+	y = ticker_data['close'][:-10].dropna()
 
-	X_train = X.ix[:split_line]
-	X_test = X.ix[split_line:]
-	y_train = y.ix[:split_line]
-	y_test = y.ix[split_line:]
+	X_test = X.ix[:split_line]
+	X_train = X.ix[split_line:]
+	y_test = y.ix[:split_line]
+	y_train = y.ix[split_line:]
 
 	models = [
 	('LR',LinearRegression()),
@@ -38,28 +38,27 @@ def get_regression_r2(ticker_data):
 	('lasso',Lasso(alpha=0.00001)),
 	('LassoLars',LassoLars(alpha=0.00001))]
 
-	best_r2 = (0,0)
+	best_r2 = (models[0][1],0)
 	for m in models:
 		m[1].fit(np.array(X_train),np.array(y_train))
-		#因为index方面，pred出的其实是相当于往后挪了一位，跟原来的y_test是对不上的，所以x需要往前进一位
-		#比较绕，所以从日期对应的方面去考虑
-		pred = m[1].predict(X_test.shift(-1).fillna(0))
+		pred = m[1].predict(X_test.fillna(0))
 		r2 = r2_score(y_test,pred)
 		if r2 > best_r2[1]:
-			best_r2 = (m[0],r2)
+			best_r2 = (m[1],r2)
 		# print "%s:\n%0.3f" % (m[0], r2_score(np.array(y_test),np.array(pred)))
 
 	print 'the best regression is:',best_r2
 
 	model = best_r2[0]
 	model.fit(X_train, y_train)
-	pred = model.predict(X_test.shift(-1).fillna(0))
+	pred = model.predict(X_test.fillna(0))
 	pred_test = pd.Series(pred, index=y_test.index)
 
 	fig  = plt.figure()
 	ax = fig.add_subplot(1,1,1)
 	ax.plot(y_test,'r',lw=0.75,linestyle='-',label='realY')
 	ax.plot(pred_test,'b',lw=0.75,linestyle='-',label='predY')
+
 	plt.legend(loc=2,prop={'size':9})
 	plt.setp(plt.gca().get_xticklabels(), rotation=30)
 	plt.grid(True)
