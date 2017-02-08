@@ -1,10 +1,10 @@
-  #coding:utf-8
+#coding:utf-8
 import numpy as np
 import pandas as pd
 from pandas import DataFrame,Series
 import datetime
 import matplotlib.pyplot as plt
-import FeatureUtils
+import Feature_utils
 #回归
 from sklearn.cross_validation import train_test_split
 from sklearn.metrics import classification_report
@@ -20,29 +20,6 @@ from sklearn.metrics import confusion_matrix
 from sklearn.qda import QDA
 from sklearn.svm import LinearSVC, SVC
 
-
-
-def get_good_feature(ticker_data):
-	ticker_data = FeatureUtils.CCI(ticker_data,10)
-	ticker_data = FeatureUtils.TL(ticker_data,10)
-	ticker_data = FeatureUtils.EVM(ticker_data,10)
-	ticker_data = FeatureUtils.SMA(ticker_data,10)
-	ticker_data = FeatureUtils.EWMA(ticker_data,10)
-	ticker_data = FeatureUtils.ROC(ticker_data,10)
-	ticker_data = FeatureUtils.ForceIndex(ticker_data,10)
-	ticker_data = FeatureUtils.BBANDS(ticker_data,10)
-	ticker_data = ticker_data.dropna()
-	#formlization
-	ticker_data = (ticker_data - ticker_data.mean())/(ticker_data.max() - ticker_data.min())
-	#get today and next day
-	X = DataFrame(ticker_data.drop('close',1).fillna(0),dtype='float64')[:-1]
-	#y要把后一天的日期跟前一天对其
-	y = Series(ticker_data['close'].shift(-1).dropna(),dtype='|S6')
-	#forest find the best 11 features
-	features = FeatureUtils.forestFindFeature(X,y,100)[:11]
-
-	ticker_data = ticker_data[features].join(ticker_data['close'])
-	return ticker_data
 
 def get_regression_r2(ticker_data):
 	data_len = len(ticker_data)
@@ -90,6 +67,7 @@ def get_regression_r2(ticker_data):
 
 	return best_r2
 
+
 def get_classification_r2(ticker_data):
 
 
@@ -106,7 +84,6 @@ def get_classification_r2(ticker_data):
 
  	models = [("LR", LogisticRegression()),
 		("LDA", LDA()),
-		# ("QDA", QDA()),
 		("LSVC", LinearSVC()),
 		("RSVM", SVC(
 			C=1000000.0, cache_size=200, class_weight=None,
@@ -132,8 +109,5 @@ def get_classification_r2(ticker_data):
 			best = (name,score)
 	print 'the best cluster is:' , best
 	return best
-
-
-
 
 

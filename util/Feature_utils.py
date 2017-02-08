@@ -1,5 +1,5 @@
+#coding: utf-8
 import pandas as pd
-
 import numpy as np
 from pandas import DataFrame,Series
 import matplotlib.pyplot as plt
@@ -116,8 +116,33 @@ def forestFindFeature(X,y,n):
 	features = []
 	for f in range(X.shape[1]):
 		features.append(x_columns[int(indices[f])])
-		# print f,indices[f],x_columns[int(indices[f])],'===========', importances[indices[f]]
+		print f,indices[f],x_columns[int(indices[f])],'===========', importances[indices[f]]
 	return features
+
+
+#找到最好的几个feature
+def get_good_feature(ticker_data,n):
+	ticker_data = CCI(ticker_data,10)
+	ticker_data = TL(ticker_data,10)
+	ticker_data = EVM(ticker_data,10)
+	ticker_data = SMA(ticker_data,10)
+	ticker_data = EWMA(ticker_data,10)
+	ticker_data = ROC(ticker_data,10)
+	ticker_data = ForceIndex(ticker_data,10)
+	ticker_data = BBANDS(ticker_data,10)
+	ticker_data = ticker_data.dropna()
+	#formlization
+	ticker_data = (ticker_data - ticker_data.mean())/(ticker_data.max() - ticker_data.min())
+	#get today and next day
+	X = DataFrame(ticker_data.drop('close',1).fillna(0),dtype='float64')[:-1]
+	#y要把后一天的日期跟前一天对其
+	y = Series(ticker_data['close'].shift(-1).dropna(),dtype='|S6')
+
+	#forest find the best 11 features
+	features = forestFindFeature(X,y,100)[:n + 1]
+
+	ticker_data = ticker_data[features].join(ticker_data['close'])
+	return ticker_data
 
 
 
