@@ -14,12 +14,14 @@ if __name__ == '__main__':
 	ticker_index = ticker_df['index']
 	ticker_np = np.array(ticker_df[['open','high','low','close','volume']])
 	ticker_df = pd.DataFrame(ticker_np,index=ticker_index,columns=['open','high','low','close','volume'],dtype="float")
-	start_date = str(datetime.datetime(2016,1,1))[0:10]
-	# end_date = str(datetime.datetime(2017,1,1))[0:10]
-	end_date = str(datetime.datetime.today())[0:10]
-	ticker_df = ticker_df[start_date : end_date]
+	start_date = datetime.datetime(2016,1,1)
+	end_date = datetime.datetime.today()
+	ticker_df = ticker_df[ticker_df.index >= start_date]
+	ticker_df = ticker_df[ticker_df.index <= end_date]
 	ticker_data = get_good_feature(ticker_df,10)
 	ticker_data.dtype = '|S6'
+
+
 
 	#get best ml
 	get_regression_r2(ticker_data)

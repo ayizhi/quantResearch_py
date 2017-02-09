@@ -24,13 +24,24 @@ from sklearn.svm import LinearSVC, SVC
 def get_regression_r2(ticker_data):
 	data_len = len(ticker_data)
 	split_line = int(data_len * 0.2)
-	X = ticker_data.drop('close',1).shift(-10).dropna()
-	y = ticker_data['close'][:-10].dropna()
+	target_X = ticker_data.drop('close',1)[0:10]
+	target_Y = ticker_data['close'][0:10]
+	X = ticker_data.drop('close',1)[10:].dropna()
+	y = ticker_data['close'].shift(10).dropna()
+
+
+	# X = ticker_data.drop('close',1).shift(-10).dropna()
+	# y = ticker_data['close'][:-10].dropna()
+
+	# X = ticker_data.drop('close',1).dropna()
+	# y = ticker_data['close'].dropna()
 
 	X_test = X.ix[:split_line]
 	X_train = X.ix[split_line:]
 	y_test = y.ix[:split_line]
 	y_train = y.ix[split_line:]
+
+	print target_X
 
 	models = [
 	('LR',LinearRegression()),
@@ -51,12 +62,12 @@ def get_regression_r2(ticker_data):
 
 	model = best_r2[0]
 	model.fit(X_train, y_train)
-	pred = model.predict(X_test.fillna(0))
-	pred_test = pd.Series(pred, index=y_test.index)
+	pred = model.predict(target_X.fillna(0))
+	pred_test = pd.Series(pred, index=target_X.index)
 
 	fig  = plt.figure()
 	ax = fig.add_subplot(1,1,1)
-	ax.plot(y_test,'r',lw=0.75,linestyle='-',label='realY')
+	ax.plot(target_Y,'r',lw=0.75,linestyle='-',label='realY')
 	ax.plot(pred_test,'b',lw=0.75,linestyle='-',label='predY')
 
 	plt.legend(loc=2,prop={'size':9})
