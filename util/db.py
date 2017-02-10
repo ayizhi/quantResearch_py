@@ -5,6 +5,16 @@ import datetime
 import time
 import numpy as np
 import pandas as pd
+import sys
+import pandas as pd
+import pandas.io.data as web
+
+# data = web.DataReader('WUBA',data_source='yahoo',start='10/1/2016', end='2/1/2017')
+# data = pd.DataFrame(data)
+
+# print data
+
+
 
 def save_hs300_into_db():
 	db_host = 'localhost'
@@ -130,3 +140,7 @@ def get_ticker_from_db_by_id(ticker_id):
 
 		return daily_data_df
 
+#从csv中获取美股的名称
+def get_us_ticker_name_from_csv(filename):
+	data = pd.read_csv(filename)[['Symbol','Name','Sector','MarketCap']]
+	print data
