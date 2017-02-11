@@ -48,6 +48,39 @@ def save_hs300_into_db():
 		cur.executemany(final_str, symbols)
 	print 'success insert hs300 into symbol!'
 
+def save_us_into_db(symbols):
+	db_host = 'localhost'
+	db_user = 'root'
+	db_password = ''
+	db_name = 'us_ticker_master'
+	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
+	now = datetime.datetime.utcnow()
+	column_str = """ticker, instrument, name, sector, currency, created_date, last_updated_date"""
+	insert_str = ("%s, " * 7)[:-2]
+	final_str = "INSERT INTO symbol (%s) VALUES (%s)" % (column_str, insert_str)
+	symbols_content = []
+
+	for i in range(len(symbols)):
+		t = symbols.ix[i]
+		print t
+		print '======='
+		symbols_content.append(
+			(
+				t['Symbol'],
+				'stock',
+				t['Name'],
+				t['Sector'],
+				'USD',
+				now,
+				now,
+				)
+			)
+	cur = con.cursor()
+	with con:
+		cur = con.cursor()
+		cur.executemany(final_str, symbols_content)
+	print 'success insert us_ticker into symbol!'
+
 #获取事先储存过的300支股票
 def get_hs300_tickers():
 	db_host = 'localhost'
@@ -143,4 +176,5 @@ def get_ticker_from_db_by_id(ticker_id):
 #从csv中获取美股的名称
 def get_us_ticker_name_from_csv(filename):
 	data = pd.read_csv(filename)[['Symbol','Name','Sector','MarketCap']]
-	print data
+	# print (data)
+	return data;
