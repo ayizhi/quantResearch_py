@@ -9,13 +9,10 @@ import sys
 import pandas as pd
 import pandas.io.data as web
 
-# data = web.DataReader('WUBA',data_source='yahoo',start='10/1/2016', end='2/1/2017')
-# data = pd.DataFrame(data)
-
-# print data
 
 
 
+#从tushare中获取hs300的股票
 def save_hs300_into_db():
 	db_host = 'localhost'
 	db_user = 'root'
@@ -62,8 +59,6 @@ def save_us_into_db(symbols):
 
 	for i in range(len(symbols)):
 		t = symbols.ix[i]
-		print t
-		print '======='
 		symbols_content.append(
 			(
 				t['Symbol'],
@@ -94,6 +89,19 @@ def get_hs300_tickers():
 		data = cur.fetchall();
 		return [(d[0],d[1],d[2]) for d in data]
 
+#获取美股id用于遍历获取信息以及存储
+def get_us_tickers():
+	db_host = 'localhost'
+	db_user = 'root'
+	db_password = ''
+	db_name = 'us_ticker_master'
+	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
+	with con:
+		cur = con.cursor();
+		cur.execute('SELECT id,ticker,name FROM symbol')
+		data = cur.fetchall();
+		return [(d[0],d[1],d[2]) for d in data]
+
 #根据id获取ticker
 def get_ticker_info_by_id(ticker_id,start_date,end_date=str(datetime.date.today())):
 	#如果没传，则默认为该支股票开始的位置
@@ -111,6 +119,13 @@ def get_ticker_info_by_id(ticker_id,start_date,end_date=str(datetime.date.today(
 	print ('======= loading success =======')
 	return ticker_data
 
+#获取美股数据
+def get_us_ticker_by_id(ticker_id,start_date,end_date=str(datetime.date.today().strftime("%m/%d/%Y"))):
+	data = web.DataReader(ticker_id,data_source='yahoo',start=start_date, end=end_date)
+	data = pd.DataFrame(data)
+	print data
+	return data
+
 #读取symbol表里的最新的日期
 def get_last_date(ticker_id):
 	db_host = 'localhost'
@@ -124,6 +139,18 @@ def get_last_date(ticker_id):
 		date = cur.fetchall()
 		return date
 
+#读取美股最新日期
+def get_us_last_date(ticker_id):
+	db_host = 'localhost'
+	db_user = 'root'
+	db_password = ''
+	db_name = 'us_ticker_master'
+	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
+	with con:
+		cur = con.cursor()
+		cur.execute("SELECT price_date FROM daily_price WHERE symbol_id=%s ORDER BY price_date DESC" % ticker_id)
+		date = cur.fetchall()
+		return date
 
 #储存到数据库
 def save_ticker_into_db(ticker_id,ticker,vendor_id):
@@ -142,7 +169,6 @@ def save_ticker_into_db(ticker_id,ticker,vendor_id):
 	final_str = "INSERT INTO daily_price (%s) VALUES (%s)" % (column_str, insert_str)
 	daily_data = []
 
-
 	for i in range(len(ticker.index)):
 		t_date = ticker.index[i]
 		t_data = ticker.ix[t_date]
@@ -151,6 +177,34 @@ def save_ticker_into_db(ticker_id,ticker,vendor_id):
 				, t_data['low'], t_data['close'], t_data['volume'], t_data['amount'])
 		)
 
+	with con:
+		cur = con.cursor()
+		cur.executemany(final_str, daily_data)
+
+#储存到美股数据库
+def save_us_ticker_into_db(ticker_id,ticker,vendor_id):
+	db_host = 'localhost'
+	db_user = 'root'
+	db_password = ''
+	db_name = 'us_ticker_master'
+	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
+	# Create the time now
+	now = datetime.datetime.utcnow()
+	 # Create the insert strings
+	column_str = """data_vendor_id, symbol_id, price_date, created_date,
+	             last_updated_date, open_price, high_price, low_price,
+	             close_price, volume, adj_close_price"""
+	insert_str = ("%s, " * 11)[:-2]
+	final_str = "INSERT INTO daily_price (%s) VALUES (%s)" % (column_str, insert_str)
+	daily_data = []
+
+	for i in range(len(ticker.index)):
+		t_date = ticker.index[i]
+		t_data = ticker.ix[t_date]
+		daily_data.append(
+			(vendor_id, ticker_id, t_date, now, now,t_data['Open'], t_data['High']
+				, t_data['Low'], t_data['Close'], t_data['Volume'], t_data['Adj Close'])
+		)
 
 	with con:
 		cur = con.cursor()
