@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import sys
 import pandas as pd
-import pandas.io.data as web
+import pandas_datareader.data as web
 
 
 
@@ -120,11 +120,24 @@ def get_ticker_info_by_id(ticker_id,start_date,end_date=str(datetime.date.today(
 	return ticker_data
 
 #获取美股数据
-def get_us_ticker_by_id(ticker_id,start_date,end_date=str(datetime.date.today().strftime("%m/%d/%Y"))):
-	data = web.DataReader(ticker_id,data_source='yahoo',start=start_date, end=end_date)
-	data = pd.DataFrame(data)
-	print data
+def get_us_ticker_by_id(ticker_id,start_date,end_date=datetime.date.today()):
+	start = datetime.datetime(2010, 1, 1)
+	end = datetime.datetime(2013, 1, 27)
+	data = web.DataReader(ticker_id, 'yahoo', start_date, end_date)
 	return data
+
+#下载失败则在symbol中删除
+def delete_symbol_from_db_by_id(id):
+	db_host = 'localhost'
+	db_user = 'root'
+	db_password = ''
+	db_name = 'us_ticker_master'
+	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
+	with con:
+		cur = con.cursor()
+		print "DELETE FROM symbol where ticker='%s'" % id
+		cur.execute("DELETE FROM symbol where ticker='%s'" % id)
+
 
 #读取symbol表里的最新的日期
 def get_last_date(ticker_id):
@@ -132,6 +145,19 @@ def get_last_date(ticker_id):
 	db_user = 'root'
 	db_password = ''
 	db_name = 'ticker_master'
+	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
+	with con:
+		cur = con.cursor()
+		cur.execute("SELECT price_date FROM daily_price WHERE symbol_id=%s ORDER BY price_date DESC" % ticker_id)
+		date = cur.fetchall()
+		return date
+
+#读取us美股symbol里的最新日期
+def get_us_last_date(ticker_id):
+	db_host = 'localhost'
+	db_user = 'root'
+	db_password = ''
+	db_name = 'us_ticker_master'
 	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
 	with con:
 		cur = con.cursor()
@@ -221,6 +247,23 @@ def get_ticker_from_db_by_id(ticker_id):
 	with con:
 		cur = con.cursor()
 		cur.execute('SELECT price_date,open_price,high_price,low_price,close_price,volume from daily_price where symbol_id = %s ORDER BY price_date DESC' % ticker_id )
+		daily_data = cur.fetchall()
+		daily_data_np = np.array(daily_data)
+		daily_data_df = pd.DataFrame(daily_data_np,columns=['index','open','high','low','close','volume'])
+
+		return daily_data_df
+
+
+#从数据中获取美股us数据
+def get_us_ticker_from_db_by_id(ticker_id):
+	db_host = 'localhost'
+	db_user = 'root'
+	db_password = ''
+	db_name = 'ticker_master'
+	con = mdb.connect(host=db_host,user=db_user,passwd=db_password,db=db_name)
+	with con:
+		cur = con.cursor()
+		cur.execute('SELECT price_date,open_price,high_price,low_price,adj_close_price,volume from daily_price where symbol_id = %s ORDER BY price_date DESC' % ticker_id )
 		daily_data = cur.fetchall()
 		daily_data_np = np.array(daily_data)
 		daily_data_df = pd.DataFrame(daily_data_np,columns=['index','open','high','low','close','volume'])

@@ -47,7 +47,6 @@ def get_regression_r2(ticker_data):
 	best_r2 = ('',-10000000)
 
 	for m in models:
-		
 		m[1].fit(np.array(X_train),np.array(y_train))
 		#因为index方面，pred出的其实是相当于往后挪了一位，跟原来的y_test是对不上的，所以x需要往前进一位
 		#比较绕，所以从日期对应的方面去考虑
