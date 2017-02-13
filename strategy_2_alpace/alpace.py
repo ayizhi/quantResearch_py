@@ -6,4 +6,8 @@ import sys
 sys.path.append('..')
 import util.db as db
 
-if __name__ == '__main__'
+
+def deal_single:
+
+if __name__ == '__main__':
+
