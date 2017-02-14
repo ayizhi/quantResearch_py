@@ -259,7 +259,7 @@ def get_us_ticker_from_db_by_id(ticker_id):
 	db_host = 'localhost'
 	db_user = 'root'
 	db_password = ''
-	db_name = 'ticker_master'
+	db_name = 'us_ticker_master'
 	con = mdb.connect(host=db_host,user=db_user,passwd=db_password,db=db_name)
 	with con:
 		cur = con.cursor()

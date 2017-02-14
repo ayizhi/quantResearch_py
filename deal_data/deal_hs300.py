@@ -1,11 +1,11 @@
 # 股票价格的预测分类/回归模型
-# 1. price between 10-50 
-# 2. 沪深三百内的 
+# 1. price between 10-50
+# 2. 沪深三百内的
 # 3. average daily volume (ADV) in the middle 33 percentile
 
 import db
 from db import get_10_50_by_id,get_tickers_from_db,get_day_volumn_33_66
-import datetime 
+import datetime
 import time
 import pandas as pd
 import numpy as np
