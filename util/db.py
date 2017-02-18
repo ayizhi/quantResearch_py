@@ -165,6 +165,19 @@ def get_us_last_date(ticker_id):
 		date = cur.fetchall()
 		return date
 
+#读取us美股最老日期
+def get_us_oldest_date(ticker_id):
+	db_host = 'localhost'
+	db_user = 'root'
+	db_password = ''
+	db_name = 'us_ticker_master'
+	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
+	with con:
+		cur = con.cursor()
+		cur.execute("SELECT price_date FROM daily_price WHERE symbol_id=%s ORDER BY price_date" % ticker_id)
+		date = cur.fetchall()
+		return date
+
 #读取美股最新日期
 def get_us_last_date(ticker_id):
 	db_host = 'localhost'
@@ -174,7 +187,7 @@ def get_us_last_date(ticker_id):
 	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
 	with con:
 		cur = con.cursor()
-		cur.execute("SELECT price_date FROM daily_price WHERE symbol_id=%s ORDER BY price_date DESC" % ticker_id)
+		cur.execute("SELECT price_date FROM daily_price WHERE symbol_id='%s' ORDER BY price_date DESC" % ticker_id)
 		date = cur.fetchall()
 		return date
 
@@ -255,7 +268,7 @@ def get_ticker_from_db_by_id(ticker_id):
 
 
 #从数据中获取美股us数据
-def get_us_ticker_from_db_by_id(ticker_id):
+def get_us_ticker_from_db_by_id(ticker_id,start_date,end_date=datetime.date.today()):
 	db_host = 'localhost'
 	db_user = 'root'
 	db_password = ''
@@ -275,3 +288,39 @@ def get_us_ticker_name_from_csv(filename):
 	data = pd.read_csv(filename)[['Symbol','Name','Sector','MarketCap']]
 	# print (data)
 	return data;
+
+
+#获取us日均交易量在中间33%的股票,从当日计算, 股票值在10到30之间
+def get_us_middle33_volume(delay_days):
+	tickers = get_us_tickers()
+	cal_volume_list = pd.DataFrame([],columns=['id','volume'])
+	df = pd.DataFrame([],columns=['id','volume'])
+	length = len(tickers)
+	print '================ is calculating ================='
+	# print tickers
+	for i in range(length):
+		ticker = tickers[i]
+		ticker_id = ticker[1]
+		
+		#处理时间
+		end_date = get_us_last_date(ticker_id)[0][0]
+		start_date = end_date + datetime.timedelta(days = delay_days * -1)
+		ticker_data = get_us_ticker_from_db_by_id(ticker_id,start_date,end_date)
+		days_mean_volume = ticker_data['volume'].mean()
+		days_mean_daily_price = ticker_data['close'].mean()
+		print '========== %s of %s , %s , %s==========' % (i,length,ticker_id,days_mean_volume)		
+		
+		#判断是否符合10到30取值区间
+		if int(days_mean_daily_price) in range(8,20):
+			print 666
+			days_mean_volume_df = pd.DataFrame([[ticker_id,days_mean_volume,days_mean_daily_price]],columns=['id','volume','price'])
+			df = df.append(days_mean_volume_df)	
+
+	df = df.sort(columns="volume")	
+	df_len = len(df)
+	df = df[int(df_len * 0.33) : int(df_len * 0.66)]
+	df.index = range(len(df))
+
+	return df
+	# print df.shape,len(df)
+
