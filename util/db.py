@@ -291,7 +291,7 @@ def get_us_ticker_name_from_csv(filename):
 
 
 #获取us日均交易量在中间33%的股票,从当日计算, 股票值在10到30之间
-def get_us_middle33_volume(delay_days):
+def get_us_middle33_volume(delay_days,low_price,high_price):
 	tickers = get_us_tickers()
 	cal_volume_list = pd.DataFrame([],columns=['id','volume'])
 	df = pd.DataFrame([],columns=['id','volume'])
@@ -311,10 +311,13 @@ def get_us_middle33_volume(delay_days):
 		print '========== %s of %s , %s , %s==========' % (i,length,ticker_id,days_mean_volume)		
 		
 		#判断是否符合10到30取值区间
-		if int(days_mean_daily_price) in range(8,20):
+		if int(days_mean_daily_price) in range(int(low_price),int(high_price)):
 			print 666
 			days_mean_volume_df = pd.DataFrame([[ticker_id,days_mean_volume,days_mean_daily_price]],columns=['id','volume','price'])
 			df = df.append(days_mean_volume_df)	
+
+		if i > 100:
+			break
 
 	df = df.sort(columns="volume")	
 	df_len = len(df)

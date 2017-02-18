@@ -28,13 +28,13 @@ if __name__ == '__main__':
 
 		print ('data_shape:' , ticker_data.shape)
 
-		if ticker_data.shape[0] != 0:
-			#存储
-			try:
-				save_us_ticker_into_db(ticker_id,ticker_data,vendor_id)
-				print '+++++++++++++ save %s , %s success +++++++++++++++' % (i,symbol)
-			except:
-				print '数据有问题！'
+		# if ticker_data.shape[0] != 0:
+		# 	#存储
+		# 	try:
+		# 		save_us_ticker_into_db(ticker_id,ticker_data,vendor_id)
+		# 		print '+++++++++++++ save %s , %s success +++++++++++++++' % (i,symbol)
+		# 	except:
+		# 		print '数据有问题！'
 
 
 
