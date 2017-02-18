@@ -152,18 +152,18 @@ def get_last_date(ticker_id):
 		date = cur.fetchall()
 		return date
 
-#读取us美股symbol里的最新日期
-def get_us_last_date(ticker_id):
-	db_host = 'localhost'
-	db_user = 'root'
-	db_password = ''
-	db_name = 'us_ticker_master'
-	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
-	with con:
-		cur = con.cursor()
-		cur.execute("SELECT price_date FROM daily_price WHERE symbol_id=%s ORDER BY price_date DESC" % ticker_id)
-		date = cur.fetchall()
-		return date
+# #读取us美股symbol里的最新日期
+# def get_us_last_date(ticker_id):
+# 	db_host = 'localhost'
+# 	db_user = 'root'
+# 	db_password = ''
+# 	db_name = 'us_ticker_master'
+# 	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
+# 	with con:
+# 		cur = con.cursor()
+# 		cur.execute("SELECT price_date FROM daily_price WHERE symbol_id=%s ORDER BY price_date DESC" % ticker_id)
+# 		date = cur.fetchall()
+# 		return date
 
 #读取us美股最老日期
 def get_us_oldest_date(ticker_id):
@@ -274,12 +274,17 @@ def get_us_ticker_from_db_by_id(ticker_id,start_date,end_date=datetime.date.toda
 	db_password = ''
 	db_name = 'us_ticker_master'
 	con = mdb.connect(host=db_host,user=db_user,passwd=db_password,db=db_name)
+
+	start_date = str(start_date)[:10]
+	end_date = str(end_date)[:10]
+
 	with con:
 		cur = con.cursor()
-		cur.execute('SELECT price_date,open_price,high_price,low_price,adj_close_price,volume FROM daily_price WHERE symbol_id="%s" ORDER BY price_date DESC' % ticker_id )
+		cur.execute('SELECT price_date,open_price,high_price,low_price,adj_close_price,volume FROM daily_price WHERE (price_date BETWEEN "%s" and "%s") AND (symbol_id="%s") ORDER BY price_date DESC' % ( start_date,end_date,ticker_id ))
 		daily_data = cur.fetchall()
 		daily_data_np = np.array(daily_data)
-		daily_data_df = pd.DataFrame(daily_data_np,columns=['index','open','high','low','close','volume'])
+		daily_data_df = pd.DataFrame(daily_data_np,columns=['index','open','high','low','close','volume'])		
+
 
 		return daily_data_df
 
@@ -309,7 +314,6 @@ def get_us_middle33_volume(delay_days,low_price,high_price):
 		days_mean_volume = ticker_data['volume'].mean()
 		days_mean_daily_price = ticker_data['close'].mean()
 		print '========== %s of %s , %s , %s==========' % (i,length,ticker_id,days_mean_volume)		
-		
 		#判断是否符合10到30取值区间
 		if int(days_mean_daily_price) in range(int(low_price),int(high_price)):
 			print 666

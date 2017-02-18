@@ -1,7 +1,9 @@
 from db import get_us_tickers,get_us_ticker_from_db_by_id,save_us_ticker_into_db,get_us_last_date
 import datetime
+import db
 import tushare as ts
 import time
+
 
 
 if __name__ == '__main__':
@@ -16,15 +18,17 @@ if __name__ == '__main__':
 		print '--------------------- %s ---------------------' % vendor_id
 
 		try:
-			print '========= loading %s , %s ==========' % (i,symbol)
-			start_date = get_us_last_date(ticker_id)[0]
+			print '========= loading %s , %s ==========' % (i,ticker_id)
+			start_date = get_us_last_date(ticker_id)[0][0]
 			print '========= loading success'
-			start_date = start_date[0] + datetime.timedelta(days = 1)
+			start_date = start_date + datetime.timedelta(days = 1)
+			
 		except:
 			start_date = ''
 
-
-		ticker_data = get_us_ticker_from_db_by_id(ticker_id,start_date)
+		print start_date , '============================================'
+		
+		ticker_data = db.get_us_ticker_by_id(ticker_id,start_date)
 
 		print ('data_shape:' , ticker_data.shape)
 
