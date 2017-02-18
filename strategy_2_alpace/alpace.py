@@ -11,4 +11,6 @@ def deal_single:
 
 if __name__ == '__main__':
 
-	print 222
+	stockers = db.get_us_tickers() 
+	print stockers
+	
