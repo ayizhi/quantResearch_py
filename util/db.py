@@ -328,6 +328,7 @@ def get_us_middle33_volume(delay_days,low_price,high_price):
 	df = df[int(df_len * 0.33) : int(df_len * 0.66)]
 	df.index = range(len(df))
 
+
 	return df
 	# print df.shape,len(df)
 
