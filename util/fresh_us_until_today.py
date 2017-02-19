@@ -2,6 +2,7 @@ from db import get_us_tickers,get_us_ticker_from_db_by_id,save_us_ticker_into_db
 import datetime
 import db
 import tushare as ts
+import pandas as pd
 import time
 
 
@@ -14,6 +15,9 @@ if __name__ == '__main__':
 		ticker_id = ticker[1]
 		ticker_name = ticker[2]
 		vendor_id = i;
+
+		if i < 251:
+			continue
 
 		print '--------------------- %s ---------------------' % vendor_id
 
@@ -28,17 +32,24 @@ if __name__ == '__main__':
 
 		print start_date , '============================================'
 		
-		ticker_data = db.get_us_ticker_by_id(ticker_id,start_date)
+		try:
+			ticker_data = db.get_us_ticker_by_id(ticker_id,start_date)
+		except:
+			print 'get data fail...'
+			ticker_data = pd.DataFrame([])
 
-		print ('data_shape:' , ticker_data.shape)
+		print ('data_shape:' , ticker_data)
 
-		# if ticker_data.shape[0] != 0:
-		# 	#存储
-		# 	try:
-		# 		save_us_ticker_into_db(ticker_id,ticker_data,vendor_id)
-		# 		print '+++++++++++++ save %s , %s success +++++++++++++++' % (i,symbol)
-		# 	except:
-		# 		print '数据有问题！'
+		if ticker_data.shape[0] != 0:
+			#存储
+			try:
+				save_us_ticker_into_db(ticker_id,ticker_data,vendor_id)
+				print '+++++++++++++ save %s , %s success +++++++++++++++' % (i,symbol)
+			except:
+				print(ticker_id, 'is error')
+		
+		print ticker_id,'==== finished ====='
+		
 
 
 

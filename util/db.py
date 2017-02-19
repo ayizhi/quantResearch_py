@@ -236,6 +236,7 @@ def save_us_ticker_into_db(ticker_id,ticker,vendor_id):
 	insert_str = ("%s, " * 11)[:-2]
 	final_str = "INSERT INTO daily_price (%s) VALUES (%s)" % (column_str, insert_str)
 	daily_data = []
+	print '111111111111111'
 
 	for i in range(len(ticker.index)):
 		t_date = ticker.index[i]
@@ -245,9 +246,14 @@ def save_us_ticker_into_db(ticker_id,ticker,vendor_id):
 				, t_data['Low'], t_data['Close'], t_data['Volume'], t_data['Adj Close'])
 		)
 
+	print '222222222222'
+
 	with con:
 		cur = con.cursor()
 		cur.executemany(final_str, daily_data)
+		print 'success insert new into db!'
+
+		
 
 
 #从数据中获取数据
