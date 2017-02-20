@@ -26,7 +26,7 @@ if __name__ == '__main__':
 		end_date = db.get_us_last_date(stocker_id)[0][0]
 		start_date = end_date + datetime.timedelta(days = day_range * -1)
 		stocker_data = db.get_us_ticker_from_db_by_id(stocker_id,start_date,end_date)
-		profit = stocker_data.loc[0].close - stocker_data.loc[len(stocker_data) - 1].close
+		profit = (stocker_data.loc[0].close - stocker_data.loc[len(stocker_data) - 1].close)/stocker_data.loc[0].close
 		
 		# print stocker_data.loc[0],stocker_data.loc[len(stocker_data) - 1]
 		print profit,'----------------------'
