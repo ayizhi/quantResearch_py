@@ -236,7 +236,6 @@ def save_us_ticker_into_db(ticker_id,ticker,vendor_id):
 	insert_str = ("%s, " * 11)[:-2]
 	final_str = "INSERT INTO daily_price (%s) VALUES (%s)" % (column_str, insert_str)
 	daily_data = []
-	print '111111111111111'
 
 	for i in range(len(ticker.index)):
 		t_date = ticker.index[i]
@@ -245,8 +244,6 @@ def save_us_ticker_into_db(ticker_id,ticker,vendor_id):
 			(vendor_id, ticker_id, t_date, now, now,t_data['Open'], t_data['High']
 				, t_data['Low'], t_data['Close'], t_data['Volume'], t_data['Adj Close'])
 		)
-
-	print '222222222222'
 
 	with con:
 		cur = con.cursor()
@@ -290,8 +287,6 @@ def get_us_ticker_from_db_by_id(ticker_id,start_date,end_date=datetime.date.toda
 		daily_data = cur.fetchall()
 		daily_data_np = np.array(daily_data)
 		daily_data_df = pd.DataFrame(daily_data_np,columns=['index','open','high','low','close','volume'])		
-
-
 		return daily_data_df
 
 #从csv中获取美股的名称
@@ -336,5 +331,32 @@ def get_us_middle33_volume(delay_days,low_price,high_price):
 
 
 	return df
-	# print df.shape,len(df)
+
+
+#得出均线
+def get_average_days_price_by_id(ticker_id,average_days = 7 * 10):
+	db_host = 'localhost'
+	db_user = 'root'
+	db_password = ''
+	db_name = 'us_ticker_master'
+	con = mdb.connect(host=db_host,user=db_user,passwd=db_password,db=db_name)
+
+	end_date = datetime.date.today()
+	start_date = end_date + datetime.timedelta(days = int(average_days) * -1)
+
+	start_date = str(start_date)[:10]
+	end_date = str(end_date)[:10]
+
+
+	print end_date,start_date
+
+
+	with con:
+		cur = con.cursor()
+		cur.execute('SELECT adj_close_price FROM daily_price WHERE (price_date BETWEEN "%s" and "%s") AND (symbol_id="%s") ORDER BY price_date DESC' % ( start_date,end_date,ticker_id ))
+		daily_data = cur.fetchall()
+		daily_data_np = np.array(daily_data)
+		daily_data_df = pd.DataFrame(daily_data_np,columns=['close'])		
+		return daily_data_df['close'].mean()
+
 
