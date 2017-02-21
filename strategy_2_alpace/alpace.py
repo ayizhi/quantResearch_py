@@ -69,7 +69,9 @@ if __name__ == '__main__':
 	print 'best_10: ',best_10
 	print '======='
 	print 'worst_10: ',worst_10
+	
 	print '======='
+
 	
 
 

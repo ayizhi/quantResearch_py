@@ -152,19 +152,6 @@ def get_last_date(ticker_id):
 		date = cur.fetchall()
 		return date
 
-# #读取us美股symbol里的最新日期
-# def get_us_last_date(ticker_id):
-# 	db_host = 'localhost'
-# 	db_user = 'root'
-# 	db_password = ''
-# 	db_name = 'us_ticker_master'
-# 	con = mdb.connect(host=db_host, user=db_user, passwd=db_password, db=db_name)
-# 	with con:
-# 		cur = con.cursor()
-# 		cur.execute("SELECT price_date FROM daily_price WHERE symbol_id=%s ORDER BY price_date DESC" % ticker_id)
-# 		date = cur.fetchall()
-# 		return date
-
 #读取us美股最老日期
 def get_us_oldest_date(ticker_id):
 	db_host = 'localhost'
