@@ -33,41 +33,43 @@ if __name__ == '__main__':
 
 
 		print profit,current_price,average_price,'----------------------'
-
+ 
 		#表现最好的,还要高于十周均线
 		if len(best_10) > 0 :
-			for i in range(len(best_10)):
-				if (profit > best_10[i][1]) and profit > 0:
-					if len(best_10) >= 10:
-						del best_10[i]
-					if(current_price > average_price){
+			
+
+			for r in range(len(best_10)):
+				if (profit > best_10[r][1]) and profit > 0:
+					if current_price > average_price :
 						best_10.append((stocker_id,profit))
-					}
-					continue
+					if len(best_10) >= 6:
+						del best_10[r]
+					
+					break
 		else:
 			if profit > 0:
-				if(current_price > average_price){
+				if current_price > average_price:
 					best_10.append((stocker_id,profit))	
-				}
+				
 
 		#表现最差的
-		if len(worst_10) > 0:
-			for i in range(len(worst_10)):
-				if (profit < worst_10[i][1]) and profit < 0:
-					if len(worst_10) >= 10:
-						del worst_10[i]
-					if(current_price < average_price){			
-						worst_10.append((stocker_id,profit))
-					}
-					continue
-		else:
-			if profit < 0:	
-				if(current_price < average_price){	
-					worst_10.append((stocker_id,profit))	
-				}
+		# if len(worst_10) > 0:
+		# 	for i in range(len(worst_10)):
+		# 		if (profit < worst_10[i][1]) and profit < 0:
+		# 			if len(worst_10) >= 10:
+		# 				del worst_10[i]
+		# 			if current_price < average_price:		
+		# 				worst_10.append((stocker_id,profit))
+					
+		# 			continue
+		# else:
+		# 	if profit < 0:	
+		# 		if current_price < average_price :	
+		# 			worst_10.append((stocker_id,profit))	
+				
 		
 
-	print 'best_10: ',best_10
+	print 'best_5: ',best_10
 	print '======='
 	print 'worst_10: ',worst_10
 	print '======='

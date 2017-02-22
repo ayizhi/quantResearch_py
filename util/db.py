@@ -308,8 +308,8 @@ def get_us_middle33_volume(delay_days,low_price,high_price):
 			days_mean_volume_df = pd.DataFrame([[ticker_id,days_mean_volume,days_mean_daily_price]],columns=['id','volume','price'])
 			df = df.append(days_mean_volume_df)	
 
-		if i > 100:
-			break
+		# if i > 100:
+		# 	break
 
 	df = df.sort(columns="volume")	
 	df_len = len(df)

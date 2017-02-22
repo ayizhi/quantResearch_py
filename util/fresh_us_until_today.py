@@ -16,15 +16,15 @@ if __name__ == '__main__':
 		ticker_name = ticker[2]
 		vendor_id = i;
 
-		if i < 251:
-			continue
+		# if i < :
+		# 	continue
 
 		print '--------------------- %s ---------------------' % vendor_id
 
 		try:
 			print '========= loading %s , %s ==========' % (i,ticker_id)
 			start_date = get_us_last_date(ticker_id)[0][0]
-			print '========= loading success'
+			print '========= loading success =========='
 			start_date = start_date + datetime.timedelta(days = 1)
 			
 		except:
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 			print 'get data fail...'
 			ticker_data = pd.DataFrame([])
 
-		print ('data_shape:' , ticker_data)
+		print ('data :' , ticker_data)
 
 		if ticker_data.shape[0] != 0:
 			#存储
