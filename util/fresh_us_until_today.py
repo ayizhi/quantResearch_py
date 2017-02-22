@@ -42,9 +42,9 @@ if __name__ == '__main__':
 
 		if ticker_data.shape[0] != 0:
 			#存储
-			print '+++++++++++++ save %s , %s success +++++++++++++++' % (i,symbol)
 			
 			try:
+				print '+++++++++++++ save %s , %s success +++++++++++++++' % (i,ticker_id)				
 				save_us_ticker_into_db(ticker_id,ticker_data,vendor_id)
 			except:
 				print(ticker_id, 'is error')
