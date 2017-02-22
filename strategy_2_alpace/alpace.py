@@ -31,6 +31,7 @@ if __name__ == '__main__':
 		current_price = stocker_data.loc[0].close
 		average_price = db.get_average_days_price_by_id(stocker_id,average_days)
 
+
 		print profit,current_price,average_price,'----------------------'
 
 		#表现最好的,还要高于十周均线
