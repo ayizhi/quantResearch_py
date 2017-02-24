@@ -11,7 +11,7 @@ import util.db as db
 
 if __name__ == '__main__':
 
-	day_range = 10 #计算周期
+	day_range = 7 #计算周期
 	round_days = 7 #执行周期
 	average_days = 7 * 10 #几日均线
 

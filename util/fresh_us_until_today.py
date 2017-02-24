@@ -20,6 +20,7 @@ if __name__ == '__main__':
 		# 	continue
 
 		print '--------------------- %s ---------------------' % vendor_id
+		
 
 		try:
 			print '========= loading %s , %s ==========' % (i,ticker_id)
