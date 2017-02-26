@@ -16,11 +16,9 @@ if __name__ == '__main__':
 		ticker_name = ticker[2]
 		vendor_id = i;
 
-		# if i < :
-		# 	continue
 
 		print '--------------------- %s ---------------------' % vendor_id
-		
+
 
 		try:
 			print '========= loading %s , %s ==========' % (i,ticker_id)
@@ -43,7 +41,6 @@ if __name__ == '__main__':
 
 		if ticker_data.shape[0] != 0:
 			#存储
-			
 			try:
 				print '+++++++++++++ save %s , %s success +++++++++++++++' % (i,ticker_id)				
 				save_us_ticker_into_db(ticker_id,ticker_data,vendor_id)
