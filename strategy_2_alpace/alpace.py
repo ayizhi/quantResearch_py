@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
 	day_range = 7 #计算周期
 	round_days = 7 #执行周期
-	average_days = 7 * 10 #几日均线
+	average_days = 7 * 30 #几日均线
 
 	#找到volumn在33％－66%之间的股票池,20日平均交易量,并且
 	stockers = db.get_us_middle33_volume(day_range,8,20)
