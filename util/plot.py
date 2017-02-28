@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import db
 
-db.get_current_mean_std_df()
+db.get_current_mean_std_df('DMO')
 
 
 def plotCurrentMeanStd(days_rang): 

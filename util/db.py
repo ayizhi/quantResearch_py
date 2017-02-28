@@ -343,23 +343,28 @@ def get_average_days_price_by_id(ticker_id,average_days = 7 * 30,end_date=dateti
 
 
 #获取一只股票的currt数据，均值方差数据
-def get_current_mean_std_df(ticker_id,cal_range=5*50,days_range=200,end_date=datetime.date.today()):
+def get_current_mean_std_df(ticker_id,days_range=200,end_date=datetime.date.today()):
 	db_host = 'localhost'
 	db_user = 'root'
 	db_password = ''
 	db_name = 'us_ticker_master'
 	con = mdb.connect(host=db_host,user=db_user,passwd=db_password,db=db_name)
 
-	start_date = end_date + datetime.timedelta(days = int(days_range + cal_range) * -1)
+	start_date = end_date + datetime.timedelta(days = int(days_range) * -1)
 	start_date = str(start_date)[:10]
 	end_date = str(end_date)[:10]
 
 	with con:
 		cur = con.cursor()
-		cur.execute('SELECT adj_close_price FROM daily_price WHERE (price_date BETWEEN "%s" and "%s") AND (symbol_id="%s") ORDER BY price_date DESC' % ( start_date,end_date,ticker_id ))
+		cur.execute('SELECT index adj_close_price FROM daily_price WHERE (price_date BETWEEN "%s" and "%s") AND (symbol_id="%s") ORDER BY price_date DESC' % ( start_date,end_date,ticker_id ))
 		daily_data = cur.fetchall()
 		daily_data_np = np.array(daily_data)
 		daily_data_df = pd.DataFrame(daily_data_np,columns=['close'])
+		daily_data_df['ma_5'] = pd.rolling_mean(daily_data_df['close'], 5)
+		daily_data_df['ma_20'] = pd.rolling_mean(daily_data_df['close'], 20)
+		daily_data_df['ma_60'] = pd.rolling_mean(daily_data_df['close'], 60)
+		
+
 
 		print daily_data_df
 		# return mean,std
