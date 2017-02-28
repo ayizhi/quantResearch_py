@@ -11,7 +11,7 @@ import util.db as db
 
 if __name__ == '__main__':
 
-	day_range = 7 #计算周期
+	day_range = 20 #计算周期
 	round_days = 7 #执行周期
 	average_days = 7 * 30 #几日均线
 
@@ -20,6 +20,8 @@ if __name__ == '__main__':
 	stocker_ids = stockers['id']
 	best_10 = [];
 	worst_10 = [];
+
+	#需要计算的，方差，30周均线，计算周期趋势
 	
 
 	for i in range(len(stocker_ids)):
@@ -29,10 +31,12 @@ if __name__ == '__main__':
 		stocker_data = db.get_us_ticker_from_db_by_id(stocker_id,start_date,end_date)
 		profit = (stocker_data.loc[0].close - stocker_data.loc[len(stocker_data) - 1].close)/stocker_data.loc[len(stocker_data) - 1].close
 		current_price = stocker_data.loc[0].close
-		average_price = db.get_average_days_price_by_id(stocker_id,average_days)
+		mean_price, std_price = db.get_average_days_price_by_id(stocker_id,average_days)
 
 
-		print profit,current_price,average_price,'----------------------'
+		print profit,current_price,mean_price,std_price,'----------------------'
+
+	
  
 		#表现最好的,还要高于十周均线
 		if len(best_10) > 0 :
@@ -40,7 +44,7 @@ if __name__ == '__main__':
 
 			for r in range(len(best_10)):
 				if (profit > best_10[r][1]) and profit > 0:
-					if current_price > average_price :
+					if current_price > mean_price :
 						best_10.append((stocker_id,profit))
 					if len(best_10) >= 6:
 						del best_10[r]
@@ -48,24 +52,8 @@ if __name__ == '__main__':
 					break
 		else:
 			if profit > 0:
-				if current_price > average_price:
+				if current_price > mean_price:
 					best_10.append((stocker_id,profit))	
-				
-
-		#表现最差的
-		# if len(worst_10) > 0:
-		# 	for i in range(len(worst_10)):
-		# 		if (profit < worst_10[i][1]) and profit < 0:
-		# 			if len(worst_10) >= 10:
-		# 				del worst_10[i]
-		# 			if current_price < average_price:		
-		# 				worst_10.append((stocker_id,profit))
-					
-		# 			continue
-		# else:
-		# 	if profit < 0:	
-		# 		if current_price < average_price :	
-		# 			worst_10.append((stocker_id,profit))	
 				
 		
 

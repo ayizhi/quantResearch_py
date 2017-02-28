@@ -304,12 +304,11 @@ def get_us_middle33_volume(delay_days,low_price,high_price):
 		print '========== %s of %s , %s , %s==========' % (i,length,ticker_id,days_mean_volume)		
 		#判断是否符合10到30取值区间
 		if int(days_mean_daily_price) in range(int(low_price),int(high_price)):
-			print 666
 			days_mean_volume_df = pd.DataFrame([[ticker_id,days_mean_volume,days_mean_daily_price]],columns=['id','volume','price'])
 			df = df.append(days_mean_volume_df)	
 
-		# if i > 100:
-		# 	break
+		if i > 10:
+			break
 
 	df = df.sort(columns="volume")	
 	df_len = len(df)
@@ -321,7 +320,7 @@ def get_us_middle33_volume(delay_days,low_price,high_price):
 
 
 #得出均线
-def get_average_days_price_by_id(ticker_id,average_days = 7 * 10):
+def get_average_days_price_by_id(ticker_id,average_days = 7 * 30):
 	db_host = 'localhost'
 	db_user = 'root'
 	db_password = ''
@@ -343,7 +342,9 @@ def get_average_days_price_by_id(ticker_id,average_days = 7 * 10):
 		cur.execute('SELECT adj_close_price FROM daily_price WHERE (price_date BETWEEN "%s" and "%s") AND (symbol_id="%s") ORDER BY price_date DESC' % ( start_date,end_date,ticker_id ))
 		daily_data = cur.fetchall()
 		daily_data_np = np.array(daily_data)
-		daily_data_df = pd.DataFrame(daily_data_np,columns=['close'])		
-		return daily_data_df['close'].mean()
+		daily_data_df = pd.DataFrame(daily_data_np,columns=['close'])
+		mean = daily_data_df['close'].mean()
+		std = daily_data_df['close'].astype('float').std()
+		return mean,std
 
 
