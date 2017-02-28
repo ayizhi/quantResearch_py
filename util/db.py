@@ -307,8 +307,7 @@ def get_us_middle33_volume(delay_days,low_price,high_price):
 			days_mean_volume_df = pd.DataFrame([[ticker_id,days_mean_volume,days_mean_daily_price]],columns=['id','volume','price'])
 			df = df.append(days_mean_volume_df)	
 
-		if i > 10:
-			break
+
 
 	df = df.sort(columns="volume")	
 	df_len = len(df)
@@ -366,5 +365,4 @@ def get_current_mean_std_df(ticker_id,days_range=200,cal_range=60,end_date=datet
 		daily_data_df['ewma_60'] = pd.ewma(daily_data_df['close'],cal_range)
 		daily_data_df['std_60'] = pd.rolling_std(daily_data_df['close'],cal_range)
 
-		print daily_data_df[60:]
-		# return mean,std
+		return daily_data_df[60:]
