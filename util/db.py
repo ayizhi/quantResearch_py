@@ -319,23 +319,17 @@ def get_us_middle33_volume(delay_days,low_price,high_price):
 	return df
 
 
-#得出均线
-def get_average_days_price_by_id(ticker_id,average_days = 7 * 30):
+#得出平均值与方差
+def get_average_days_price_by_id(ticker_id,average_days = 7 * 30,end_date=datetime.date.today()):
 	db_host = 'localhost'
 	db_user = 'root'
 	db_password = ''
 	db_name = 'us_ticker_master'
 	con = mdb.connect(host=db_host,user=db_user,passwd=db_password,db=db_name)
 
-	end_date = datetime.date.today()
 	start_date = end_date + datetime.timedelta(days = int(average_days) * -1)
-
 	start_date = str(start_date)[:10]
 	end_date = str(end_date)[:10]
-
-
-	print end_date,start_date
-
 
 	with con:
 		cur = con.cursor()
@@ -348,3 +342,24 @@ def get_average_days_price_by_id(ticker_id,average_days = 7 * 30):
 		return mean,std
 
 
+#获取一只股票的currt数据，均值方差数据
+def get_current_mean_std_df(ticker_id,cal_range=5*50,days_range=200,end_date=datetime.date.today()):
+	db_host = 'localhost'
+	db_user = 'root'
+	db_password = ''
+	db_name = 'us_ticker_master'
+	con = mdb.connect(host=db_host,user=db_user,passwd=db_password,db=db_name)
+
+	start_date = end_date + datetime.timedelta(days = int(days_range + cal_range) * -1)
+	start_date = str(start_date)[:10]
+	end_date = str(end_date)[:10]
+
+	with con:
+		cur = con.cursor()
+		cur.execute('SELECT adj_close_price FROM daily_price WHERE (price_date BETWEEN "%s" and "%s") AND (symbol_id="%s") ORDER BY price_date DESC' % ( start_date,end_date,ticker_id ))
+		daily_data = cur.fetchall()
+		daily_data_np = np.array(daily_data)
+		daily_data_df = pd.DataFrame(daily_data_np,columns=['close'])
+
+		print daily_data_df
+		# return mean,std
