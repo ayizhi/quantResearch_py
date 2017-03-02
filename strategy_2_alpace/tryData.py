@@ -7,10 +7,7 @@ import util.db as db
 import util.plot as plot
 import pprint
 
-data = ['SNC', 'FDEU', 'GRX', 'CBZ', 'AHH', 'MXF', 'IAE', 'CRF', 'CAI',
-       'RVT', 'PIE', 'ADRO', 'WEA', 'AYA', 'VTTI', 'RMT', 'HQL', 'EBF',
-       'ADX', 'SCD', 'THQ', 'THW', 'UBNK', 'BIF', 'IDT', 'IGA', 'BKMU',
-       'SUNS', 'LFC', 'TEI', 'NYLD.A', 'AKBA', 'IHD', 'AQN']
+data = ['AKBA']
 
 
 df = pd.DataFrame(data)
