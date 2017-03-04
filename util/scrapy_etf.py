@@ -55,8 +55,10 @@ while True:
 
    
 
-df = pd.DataFrame(target_data)
+df = pd.DataFrame(target_data,columns=['Symbol','Name'])
 df.to_csv('etf.csv')
+
+
 
 print target_data
 
