@@ -9,6 +9,4 @@ data['Sector'] = 'ETF'
 
 data = data[['Symbol','Sector','Name']]
 
-
-
 db.save_us_into_db(data)
