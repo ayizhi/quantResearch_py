@@ -7,8 +7,7 @@ import util.db as db
 import util.plot as plot
 import pprint
 
-data = ['AKBA']
-
+data = ['EWZS']
 
 df = pd.DataFrame(data)
 
@@ -18,7 +17,7 @@ for i in range(df.shape[0]):
     ticker = df.loc[i]
     print ticker,'========================='
     ticker_id = ticker[0]
-    plot.plotCurrentMeanStd(ticker_id)
+    plot.plotCurrentMeanStd(ticker_id,400)
     ticker_judge = raw_input()#1:buy,0:no,2:interest
     my_judge.append((ticker_id,ticker_judge))
 

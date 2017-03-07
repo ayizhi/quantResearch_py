@@ -42,18 +42,21 @@ if __name__ == '__main__':
 	df = df.reset_index()
 
 	#选盈利前30%中的后40%
-	df_length_30per = int(df.shape[0] * 0.3)
-	print df_length_30per,df.shape,'------------'
-	best_30per = df[:df_length_30per]
-	df_length_40per = int(best_30per.shape[0] *0.8)
-	print df_length_40per,best_30per.shape,'========='
-	best_30per_40per = best_30per[df_length_40per:]
+	# df_length_30per = int(df.shape[0] * 0.3)
+	# print df_length_30per,df.shape,'------------'
+	# best_30per = df[:df_length_30per]
+	# df_length_40per = int(best_30per.shape[0] *0.8)
+	# print df_length_40per,best_30per.shape,'========='
+	# best_30per_40per = best_30per[df_length_40per:]
 
-	print '~~~~~~~~~~~~~~~~~~~~~~~~~~'
+	# print '~~~~~~~~~~~~~~~~~~~~~~~~~~'
 	
 
-	pprint.pprint(best_30per_40per)
-	pprint.pprint(np.array(best_30per_40per['id']))
+	# pprint.pprint(best_30per_40per)
+	# pprint.pprint(np.array(best_30per_40per['id']))
+
+	pprint.pprint(df)
+
 
 
 
