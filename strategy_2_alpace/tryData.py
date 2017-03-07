@@ -21,6 +21,7 @@ for i in range(df.shape[0]):
     ticker_judge = raw_input()#1:buy,0:no,2:interest
     my_judge.append((ticker_id,ticker_judge))
 
+
 pprint.pprint(my_judge)
 
 
