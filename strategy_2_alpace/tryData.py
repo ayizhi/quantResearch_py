@@ -22,6 +22,7 @@ for i in range(df.shape[0]):
     my_judge.append((ticker_id,ticker_judge))
 
 
+
 pprint.pprint(my_judge)
 
 
