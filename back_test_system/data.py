@@ -1,3 +1,4 @@
+
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
@@ -5,7 +6,7 @@
 
 from __future__ import print_function
 
-from abc import ABCMeta, abstractmethod_
+from abc import ABCMeta, abstractmethod
 import datetime
 import os, os.path
 
@@ -13,7 +14,6 @@ import numpy as np
 import pandas as pd
 
 from event import MarketEvent
-
 
 
 class DataHandler(object):
@@ -105,7 +105,7 @@ class HistoricCSVDataHandler(DataHandler):
 
         self.symbol_data = {}
         self.latest_symbol_data = {}
-        self.continue_backtest = True
+        self.continue_backtest = True       
         self.bar_index = 0
 
         self._open_convert_csv_files()
@@ -230,3 +230,4 @@ class HistoricCSVDataHandler(DataHandler):
                 if bar is not None:
                     self.latest_symbol_data[s].append(bar)
         self.events.put(MarketEvent())
+
