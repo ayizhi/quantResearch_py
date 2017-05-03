@@ -5,7 +5,7 @@
 
 from __future__ import print_function
 
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta, abstractmethod_
 import datetime
 import os, os.path
 
@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 
 from event import MarketEvent
+
 
 
 class DataHandler(object):
@@ -104,7 +105,7 @@ class HistoricCSVDataHandler(DataHandler):
 
         self.symbol_data = {}
         self.latest_symbol_data = {}
-        self.continue_backtest = True       
+        self.continue_backtest = True
         self.bar_index = 0
 
         self._open_convert_csv_files()
