@@ -31,11 +31,11 @@ if __name__ == '__main__':
 
 		print start_date , '============================================'
 		
-		try:
-			ticker_data = db.get_us_ticker_by_id(ticker_id,start_date)
-		except:
-			print 'get data fail...'
-			ticker_data = pd.DataFrame([])
+		# try:
+		ticker_data = db.get_us_ticker_by_id(ticker_id,start_date)
+		# except:
+		# print 'get data fail...'
+		# ticker_data = pd.DataFrame([])
 
 		print ('data :' , ticker_data)
 

@@ -123,6 +123,7 @@ def get_ticker_info_by_id(ticker_id,start_date,end_date=str(datetime.date.today(
 def get_us_ticker_by_id(ticker_id,start_date,end_date=datetime.date.today()):
 	start = datetime.datetime(2010, 1, 1)
 	end = datetime.datetime(2013, 1, 27)
+	print(start,end,ticker_id,'-----')
 	data = web.DataReader(ticker_id, 'yahoo', start_date, end_date)
 	return data
 
@@ -326,20 +327,24 @@ def get_average_days_price_by_id(ticker_id,average_days = 7 * 30):
 	db_password = ''
 	db_name = 'us_ticker_master'
 	con = mdb.connect(host=db_host,user=db_user,passwd=db_password,db=db_name)
-	
+
 	end_date=datetime.date.today()
 	start_date = end_date + datetime.timedelta(days = int(average_days) * -1)
 	start_date = str(start_date)[:10]
 	end_date = str(end_date)[:10]
-
 	with con:
 		cur = con.cursor()
 		cur.execute('SELECT adj_close_price FROM daily_price WHERE (price_date BETWEEN "%s" and "%s") AND (symbol_id="%s") ORDER BY price_date DESC' % ( start_date,end_date,ticker_id ))
 		daily_data = cur.fetchall()
 		daily_data_np = np.array(daily_data)
-		daily_data_df = pd.DataFrame(daily_data_np,columns=['close'])
-		mean = daily_data_df['close'].mean()
-		std = daily_data_df['close'].astype('float').std()
+		daily_data_df = pd.DataFrame(daily_data_np,columns=['close']).fillna(method="pad").fillna(method="bfill")
+		if len(daily_data_df) == 0 :
+			mean = 0;
+			std = 0
+		else:
+			mean = daily_data_df['close'].mean()
+			std = daily_data_df['close'].astype('float').std()
+
 		return mean,std
 
 
