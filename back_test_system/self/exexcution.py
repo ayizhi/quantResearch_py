@@ -18,7 +18,7 @@ class ExecutionHandler(object):
 
 class SimulateExecutionHandler(ExecutionHandler):
 	def  __init__(self,events):
-		self.evnets = events
+		self.events = events
 
 	def execute_order(self,event):
 		if event.type == 'ORDER':
