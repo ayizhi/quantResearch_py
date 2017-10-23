@@ -71,7 +71,7 @@ class Backtest(object):
 			time.sleep(self.hearbeat)
 
 	def _output_performance(self):
-		self.portfolio.create_equity_curve_dataframe()
+		self.Portfolio.create_equity_curve_dataframe()
 		print ('Creating summary stats...')
 		stats = self.Portfolio.output_summary_stats()
 
